@@ -23,6 +23,11 @@ namespace JohnnyBluhmWeb.Controllers
             return View();
         }
 
+        public IActionResult FinalPaper()
+        {
+            return View("Privacy");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
