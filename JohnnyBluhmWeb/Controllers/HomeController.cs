@@ -15,7 +15,7 @@ namespace JohnnyBluhmWeb.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View("Johnny");
         }
 
         public IActionResult Privacy()
