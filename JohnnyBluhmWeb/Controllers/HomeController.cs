@@ -25,7 +25,7 @@ namespace JohnnyBluhmWeb.Controllers
 
         public IActionResult FinalPaper()
         {
-            return View("Privacy");
+            return View("AiPaper");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
