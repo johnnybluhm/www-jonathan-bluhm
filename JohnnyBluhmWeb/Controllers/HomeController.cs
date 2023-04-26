@@ -23,6 +23,11 @@ namespace JohnnyBluhmWeb.Controllers
             return View();
         }
 
+        public IActionResult Resume()
+        {
+            return View();
+        }
+
         public IActionResult FinalPaper()
         {
             return View("AiPaper");
