@@ -37,28 +37,6 @@ namespace JohnnyBluhmWeb.Controllers
             this.accessToken = accessToken ?? "";
         }
 
-        [HttpGet]
-        [Route("strava")]
-        public IActionResult Get()
-        {
-            var refreshWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/Tokens/refreshToken.txt");
-            refreshWriter.WriteLine("wrote");
-            refreshWriter.WriteLine("wrote");
-            refreshWriter.WriteLine("wrote");
-            refreshWriter.WriteLine("wrote");
-            refreshWriter.WriteLine("wrote");
-            refreshWriter.WriteLine("wrote");
-            refreshWriter.WriteLine("wrote");
-            refreshWriter.WriteLine("wrote");
-            refreshWriter.Close();
-
-            var accessWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/Tokens/accessToken.txt");
-            accessWriter.WriteLine("wrote");
-            accessWriter.Close();
-            return Ok();
-
-        }
-
         // GET api/<StravaController>/5
         [HttpGet("exchange_token")]
         public async Task<string> Exchange()
@@ -74,8 +52,19 @@ namespace JohnnyBluhmWeb.Controllers
         [HttpGet("GetAll")]
         public async Task<string> GetAll()
         {
-            var url = $"https://www.strava.com/api/v3/athlete/activities?per_page=100";
 
+            var epoch2020 = 1577862000;
+            var epochOneMonth = 2629743;
+            var before = epoch2020 + epochOneMonth;
+            var after = epoch2020;
+            var epochNow = 1683363184;
+
+            while(after < epochNow)
+            {
+                //loop
+            }
+            var url = $"https://www.strava.com/api/v3/athlete/activities?per_page=200&before=&after=";
+            //w
             try
             {
                 var request = new HttpRequestMessage();
@@ -84,8 +73,17 @@ namespace JohnnyBluhmWeb.Controllers
                 request.RequestUri = new Uri(url);
 
                 var res = await _httpClient.SendAsync(request);
+                //1577862000
+                //2629743 one month epoch
 
-                return await res.Content.ReadAsStringAsync();
+                var content = await res.Content.ReadAsStringAsync();
+                
+                var fileStream = new StreamWriter($"{_env.WebRootPath}/CachedData/Activities/activities-{DateTime.Now.Hour}-{DateTime.Now.Minute}-{DateTime.Now.Second}.txt");
+
+                fileStream.WriteLine(content);
+                fileStream.Close();
+                return content;
+
             }
             catch (Exception ex)
             {
@@ -124,11 +122,11 @@ namespace JohnnyBluhmWeb.Controllers
                 var tokens = JsonSerializer.Deserialize<OAuthResponse>(oAuthResponse);
 
                 using var refreshWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/Tokens/refreshToken.txt");
-                refreshWriter.WriteLine(tokens?.refresh_token);
+                refreshWriter.Write(tokens?.refresh_token);
                 refreshWriter.Close();
 
                 using var accessWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/Tokens/accessToken.txt");
-                accessWriter.WriteLine(tokens?.access_token);
+                accessWriter.Write(tokens?.access_token);
                 accessWriter.Close();
 
                 return true;
