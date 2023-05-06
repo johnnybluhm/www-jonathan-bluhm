@@ -33,6 +33,16 @@ namespace JohnnyBluhmWeb.Controllers
             return View();
         }
 
+        public IActionResult SignIn()
+        {
+            return Redirect("https://www.strava.com/oauth/authorize?client_id=66831&response_type=code&redirect_uri=https://localhost:7038/api/exchange_token&scope=read,activity:read,activity:read_all");
+        }
+
+        public IActionResult Test()
+        {
+            return Redirect("https://localhost:7038/api/exchange_token");
+        }
+
         public IActionResult FinalPaper()
         {
             return View("AiPaper");
