@@ -59,11 +59,11 @@ namespace JohnnyBluhmWeb.Controllers
             var after = epoch2020;
             var epochNow = 1683363184;
 
-            while(after < epochNow)
+            /*while(after < epochNow)
             {
                 //loop
-            }
-            var url = $"https://www.strava.com/api/v3/athlete/activities?per_page=200&before=&after=";
+            }*/
+            var url = $"https://www.strava.com/api/v3/athlete/activities?per_page=200&before="+before.ToString()+"&after="+after.ToString();
             //w
             try
             {
