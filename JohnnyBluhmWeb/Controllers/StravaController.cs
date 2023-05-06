@@ -110,18 +110,17 @@ namespace JohnnyBluhmWeb.Controllers
             timer.Start();
             int month = 0;
             int year = 2020;
+            var activities = new List<ActivityResponse>();
 
-            
             while (true)
             {
                 try
                 {
                     var fileStream = new StreamReader($"{_env.WebRootPath}/CachedData/Activities/activities-{month + 1}-{year}.txt");
-                    var activity = fileStream.ReadToEnd();
-                    var sb = new StringBuilder();
-                    sb.AppendLine(activity);
+                    var activityString = fileStream.ReadToEnd();                    
                     fileStream.Close();
-
+                    var activitiesFromOneMonth = JsonSerializer.Deserialize<List<ActivityResponse>>(activityString);                
+                    activities.AddRange(activitiesFromOneMonth);
                     //loop reseting
                     month++;
                     if (month % 12 == 0)
@@ -141,7 +140,7 @@ namespace JohnnyBluhmWeb.Controllers
             timer.Stop();
 
 
-            return $"Done bitch in {timer.Elapsed}!";
+            return $"Done bitch in {timer.Elapsed.TotalMilliseconds}ms!";
         }
 
         // POST api/<StravaController>
