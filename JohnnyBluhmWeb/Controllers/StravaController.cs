@@ -1,5 +1,6 @@
 ﻿using JohnnyBluhmWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -52,43 +53,53 @@ namespace JohnnyBluhmWeb.Controllers
         [HttpGet("GetAll")]
         public async Task<string> GetAll()
         {
-
+            var timer = new Stopwatch();
+            timer.Start();
             var epoch2020 = 1577862000;
             var epochOneMonth = 2629743;
             var before = epoch2020 + epochOneMonth;
             var after = epoch2020;
             var epochNow = 1683363184;
-
-            /*while(after < epochNow)
+            int month = 0;
+            int year = 2020;
+            while (after < epochNow)
             {
-                //loop
-            }*/
-            var url = $"https://www.strava.com/api/v3/athlete/activities?per_page=200&before="+before.ToString()+"&after="+after.ToString();
-            //w
-            try
-            {
+                var url = $"https://www.strava.com/api/v3/athlete/activities?per_page=200&before=" + before.ToString() + "&after=" + after.ToString();
                 var request = new HttpRequestMessage();
                 request.Method = HttpMethod.Get;
                 request.Headers.Add("Authorization", $"Bearer {accessToken}");
                 request.RequestUri = new Uri(url);
-
-                var res = await _httpClient.SendAsync(request);
-                //1577862000
-                //2629743 one month epoch
-
-                var content = await res.Content.ReadAsStringAsync();
                 
-                var fileStream = new StreamWriter($"{_env.WebRootPath}/CachedData/Activities/activities-{DateTime.Now.Hour}-{DateTime.Now.Minute}-{DateTime.Now.Second}.txt");
+                try
+                {
+                    var res = await _httpClient.SendAsync(request);
+                    //1577862000
+                    //2629743 one month epoch
 
-                fileStream.WriteLine(content);
-                fileStream.Close();
-                return content;
+                    var content = await res.Content.ReadAsStringAsync();
 
+                    var fileStream = new StreamWriter($"{_env.WebRootPath}/CachedData/Activities/activities-{month + 1}-{year}.txt");
+
+                    fileStream.WriteLine(content);
+                    fileStream.Close();
+
+                    //loop reseting
+                    after = after + epochOneMonth;
+                    before = before + epochOneMonth;
+                    month++;
+                    if (month % 12 == 0)
+                    {
+                        month = 0;
+                        year++;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return ex.Message;
+                }
             }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            timer.Stop();
+            return $"Done bitch in {timer.Elapsed}!";
         }
 
         // POST api/<StravaController>
@@ -136,6 +147,11 @@ namespace JohnnyBluhmWeb.Controllers
                 return false;
             }
             return false;
+        }
+
+        private async void GetActivity()
+        {
+
         }
     }
 }
