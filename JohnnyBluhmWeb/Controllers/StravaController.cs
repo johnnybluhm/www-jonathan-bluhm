@@ -142,7 +142,7 @@ namespace JohnnyBluhmWeb.Controllers
 
             foreach (var activity in activities)
             {
-                var url = $"https://www.strava.com/api/v3/activities/+" + activity.id.ToString() + "?include_all_efforts=false";
+                var url = $"https://www.strava.com/api/v3/activities/" + activity.id.ToString() + "?include_all_efforts=false";
                 var request = new HttpRequestMessage();
                 request.Method = HttpMethod.Get;
                 request.Headers.Add("Authorization", $"Bearer {accessToken}");
@@ -162,14 +162,14 @@ namespace JohnnyBluhmWeb.Controllers
                     {
                         System.IO.Directory.CreateDirectory(dir);
                     }
-                    var fileStream = new StreamWriter($"{dir}/{activity.id}");
+                    var fileStream = new StreamWriter($"{dir}/{activity.id}.txt");
 
                     fileStream.WriteLine(content);
                     fileStream.Close();
                 }
                 catch (Exception ex)
                 {
-                    return $"Caught execption: Message: {ex.Message}, Data: {ex.Data}"
+                    return $"Caught execption: Message: {ex.Message}, Data: {ex.Data}";
                 }
             }
 
