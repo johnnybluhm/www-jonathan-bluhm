@@ -103,8 +103,8 @@ namespace JohnnyBluhmWeb.Controllers
             return $"Done bitch in {timer.Elapsed}!";
         }
 
-        [HttpGet("GetAll")]
-        public async Task<string> GetAllFromFile()
+        [HttpGet("GetAllFromFile")]
+        public string GetAllFromFile()
         {
             var timer = new Stopwatch();
             timer.Start();
