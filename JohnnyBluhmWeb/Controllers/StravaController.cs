@@ -54,7 +54,7 @@ namespace JohnnyBluhmWeb.Controllers
         [HttpGet("GetAll")]
         public async Task<string> GetAll()
         {
-            var timer = new Stopwatch();
+            /*var timer = new Stopwatch();
             timer.Start();
             var epoch2020 = 1577862000;
             var epochOneMonth = 2629743;
@@ -100,11 +100,12 @@ namespace JohnnyBluhmWeb.Controllers
                 }
             }
             timer.Stop();
-            return $"Done bitch in {timer.Elapsed}!";
+            return $"Done bitch in {timer.Elapsed}!";*/
+            return "h";
         }
 
         [HttpGet("GetAllFromFile")]
-        public string GetAllFromFile()
+        public async Task<string> GetAllFromFile()
         {
             var timer = new Stopwatch();
             timer.Start();
@@ -117,18 +118,18 @@ namespace JohnnyBluhmWeb.Controllers
                 try
                 {
                     var fileStream = new StreamReader($"{_env.WebRootPath}/CachedData/Activities/activities-{month + 1}-{year}.txt");
-                    var activityString = fileStream.ReadToEnd();                    
+                    var activityString = fileStream.ReadToEnd();
                     fileStream.Close();
-                    var activitiesFromOneMonth = JsonSerializer.Deserialize<List<ActivityResponse>>(activityString);                
+                    var activitiesFromOneMonth = JsonSerializer.Deserialize<List<ActivityResponse>>(activityString);
                     activities.AddRange(activitiesFromOneMonth);
                     //loop reseting
                     month++;
+
                     if (month % 12 == 0)
                     {
                         month = 0;
                         year++;
                     }
-
                 }
                 catch (FileNotFoundException)
                 {
@@ -139,6 +140,38 @@ namespace JohnnyBluhmWeb.Controllers
 
             timer.Stop();
 
+            foreach (var activity in activities)
+            {
+                var url = $"https://www.strava.com/api/v3/activities/+" + activity.id.ToString() + "?include_all_efforts=false";
+                var request = new HttpRequestMessage();
+                request.Method = HttpMethod.Get;
+                request.Headers.Add("Authorization", $"Bearer {accessToken}");
+                request.RequestUri = new Uri(url);
+
+                try
+                {
+                    var res = await _httpClient.SendAsync(request);
+                    //1577862000
+                    //2629743 one month epoch
+
+                    var content = await res.Content.ReadAsStringAsync();
+                    var activityDate = DateTime.Parse(activity.start_date);
+                    var dir = $"{_env.WebRootPath}/CachedData/DetailedActivities-{activityDate.Month}-{activityDate.Year}";
+                    bool exists = System.IO.Directory.Exists(dir);
+                    if (!exists)
+                    {
+                        System.IO.Directory.CreateDirectory(dir);
+                    }
+                    var fileStream = new StreamWriter($"{dir}/{activity.id}");
+
+                    fileStream.WriteLine(content);
+                    fileStream.Close();
+                }
+                catch (Exception ex)
+                {
+                    return $"Caught execption: Message: {ex.Message}, Data: {ex.Data}"
+                }
+            }
 
             return $"Done bitch in {timer.Elapsed.TotalMilliseconds}ms!";
         }
