@@ -27,8 +27,8 @@ namespace JohnnyBluhmWeb.Controllers
             refreshReader.Close();
 
             var accessReader = new StreamReader($"{hostingEnvironment.WebRootPath}/CachedData/Tokens/accessToken.txt");
-            var accessToken = accessReader.ReadToEnd(); 
-            refreshReader.Close();
+            var accessToken = accessReader.ReadToEnd();
+            accessReader.Close();
 
             refreshReader.Dispose();
             accessReader.Dispose();
@@ -71,6 +71,28 @@ namespace JohnnyBluhmWeb.Controllers
             return "value";
         }
 
+        [HttpGet("GetAll")]
+        public async Task<string> GetAll()
+        {
+            var url = $"https://www.strava.com/api/v3/athlete/activities?per_page=100";
+
+            try
+            {
+                var request = new HttpRequestMessage();
+                request.Method = HttpMethod.Get;
+                request.Headers.Add("Authorization", $"Bearer {accessToken}");
+                request.RequestUri = new Uri(url);
+
+                var res = await _httpClient.SendAsync(request);
+
+                return await res.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
         // POST api/<StravaController>
         [HttpPost]
         public void Post([FromBody] string value)
@@ -91,7 +113,7 @@ namespace JohnnyBluhmWeb.Controllers
 
         private async Task<bool> GenerateNewToken(string code)
         {
-            var url = $"https://www.strava.com/oauth/token?client_id="+clientId+"&client_secret="+clientSecret+"&code="+code+"&grant_type=authorization_code";
+            var url = $"https://www.strava.com/oauth/token?client_id=" + clientId + "&client_secret=" + clientSecret + "&code=" + code + "&grant_type=authorization_code";
 
             try
             {
