@@ -22,13 +22,16 @@ namespace JohnnyBluhmWeb.Controllers
         public StravaController(IWebHostEnvironment hostingEnvironment)
         {
             _env = hostingEnvironment;
-            var reader = new StreamReader($"{hostingEnvironment.WebRootPath}/CachedData/Tokens/refreshToken.txt");
-            var refreshToken = reader.ReadToEnd();
-            reader.Close();
+            var refreshReader = new StreamReader($"{hostingEnvironment.WebRootPath}/CachedData/Tokens/refreshToken.txt");
+            var refreshToken = refreshReader.ReadToEnd();
+            refreshReader.Close();
 
-            reader = new StreamReader($"{hostingEnvironment.WebRootPath}/CachedData/Tokens/accessToken.txt");
-            var accessToken = reader.ReadToEnd();
-            reader.Close();
+            var accessReader = new StreamReader($"{hostingEnvironment.WebRootPath}/CachedData/Tokens/accessToken.txt");
+            var accessToken = accessReader.ReadToEnd(); 
+            refreshReader.Close();
+
+            refreshReader.Dispose();
+            accessReader.Dispose();
 
             this.refreshToken = refreshToken ?? "";
             this.accessToken = accessToken ?? "";
@@ -38,6 +41,20 @@ namespace JohnnyBluhmWeb.Controllers
         [Route("strava")]
         public IActionResult Get()
         {
+            var refreshWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/Tokens/refreshToken.txt");
+            refreshWriter.WriteLine("wrote");
+            refreshWriter.WriteLine("wrote");
+            refreshWriter.WriteLine("wrote");
+            refreshWriter.WriteLine("wrote");
+            refreshWriter.WriteLine("wrote");
+            refreshWriter.WriteLine("wrote");
+            refreshWriter.WriteLine("wrote");
+            refreshWriter.WriteLine("wrote");
+            refreshWriter.Close();
+
+            var accessWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/Tokens/accessToken.txt");
+            accessWriter.WriteLine("wrote");
+            accessWriter.Close();
             return Ok();
 
         }
@@ -84,12 +101,13 @@ namespace JohnnyBluhmWeb.Controllers
 
                 var tokens = JsonSerializer.Deserialize<OAuthResponse>(oAuthResponse);
 
-                var writer = new StreamWriter($"{_env.WebRootPath}/CachedData/Tokens/refreshToken.txt");
-                writer.Write(tokens?.refresh_token);
+                using var refreshWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/Tokens/refreshToken.txt");
+                refreshWriter.WriteLine(tokens?.refresh_token);
+                refreshWriter.Close();
 
-                writer = new StreamWriter($"{_env.WebRootPath}/CachedData/Tokens/accessToken.txt");
-                writer.Write(tokens?.access_token);
-
+                using var accessWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/Tokens/accessToken.txt");
+                accessWriter.WriteLine(tokens?.access_token);
+                accessWriter.Close();
 
                 return true;
             }
