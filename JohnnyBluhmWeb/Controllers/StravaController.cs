@@ -12,6 +12,8 @@ namespace JohnnyBluhmWeb.Controllers
         private static HttpClient _httpClient = new HttpClient();
         private string clientId = "66831";
         private string clientSecret = "a9d10ba407da3fecec77dbc0ec46163768294367";
+        private string refreshToken;
+        private string accessToken;
         // GET: api/<StravaController>
         [HttpGet]
         [Route("strava")]
@@ -24,14 +26,12 @@ namespace JohnnyBluhmWeb.Controllers
 
         // GET api/<StravaController>/5
         [HttpGet("exchange_token")]
-        public string Exchange()
+        public async Task<string> Exchange()
         {
             var url = ControllerContext.HttpContext.Request.Query;
             HttpContext.Request.Query.TryGetValue("code", out var codeFromDict);
 
-            var code = "d1fee441fc9ae07ff47754270dcc3c2b28a013c8";
-
-
+            var success = await GenerateNewToken(codeFromDict);
 
             return "value";
         }
@@ -56,13 +56,13 @@ namespace JohnnyBluhmWeb.Controllers
 
         private async Task<bool> GenerateNewToken(string code)
         {
-            var url = $"https://www.strava.com/oauth/token?clientId="+clientId+"&clientSecret="+clientSecret+"&code="+code+"&grant_type="+code;
+            var url = $"https://www.strava.com/oauth/token?client_id="+clientId+"&client_secret="+clientSecret+"&code="+code+"&grant_type=authorization_code";
 
             try
             {
-                var res = _httpClient.PostAsync(url, null);
+                var res = await _httpClient.PostAsync(url, null);
 
-                var token = await res.Result.Content.ReadAsStringAsync();
+                var token = await res.Content.ReadAsStringAsync();
                 return true;
             }
             catch (Exception ex)
