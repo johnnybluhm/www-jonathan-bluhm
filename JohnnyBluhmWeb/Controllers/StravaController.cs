@@ -1,6 +1,7 @@
 ﻿using JohnnyBluhmWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -69,7 +70,7 @@ namespace JohnnyBluhmWeb.Controllers
                 request.Method = HttpMethod.Get;
                 request.Headers.Add("Authorization", $"Bearer {accessToken}");
                 request.RequestUri = new Uri(url);
-                
+
                 try
                 {
                     var res = await _httpClient.SendAsync(request);
@@ -99,6 +100,47 @@ namespace JohnnyBluhmWeb.Controllers
                 }
             }
             timer.Stop();
+            return $"Done bitch in {timer.Elapsed}!";
+        }
+
+        [HttpGet("GetAll")]
+        public async Task<string> GetAllFromFile()
+        {
+            var timer = new Stopwatch();
+            timer.Start();
+            int month = 0;
+            int year = 2020;
+
+            
+            while (true)
+            {
+                try
+                {
+                    var fileStream = new StreamReader($"{_env.WebRootPath}/CachedData/Activities/activities-{month + 1}-{year}.txt");
+                    var activity = fileStream.ReadToEnd();
+                    var sb = new StringBuilder();
+                    sb.AppendLine(activity);
+                    fileStream.Close();
+
+                    //loop reseting
+                    month++;
+                    if (month % 12 == 0)
+                    {
+                        month = 0;
+                        year++;
+                    }
+
+                }
+                catch (FileNotFoundException)
+                {
+                    break;
+                }
+
+            }
+
+            timer.Stop();
+
+
             return $"Done bitch in {timer.Elapsed}!";
         }
 
