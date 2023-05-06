@@ -14,13 +14,29 @@ namespace JohnnyBluhmWeb.Controllers
         private string clientSecret = "a9d10ba407da3fecec77dbc0ec46163768294367";
         private string refreshToken;
         private string accessToken;
+        private IWebHostEnvironment _env;
         // GET: api/<StravaController>
+
+        public StravaController(IWebHostEnvironment hostingEnvironment)
+        {
+            _env = hostingEnvironment;
+            var reader = new StreamReader($"{hostingEnvironment.WebRootPath}/CachedData/Tokens/refreshToken.txt");
+            var refreshToken = reader.ReadToEnd();
+            reader.Close();
+
+            reader = new StreamReader($"{hostingEnvironment.WebRootPath}/CachedData/Tokens/accessToken.txt");
+            var accessToken = reader.ReadToEnd();
+            reader.Close();
+
+            this.refreshToken = refreshToken ?? "";
+            this.accessToken = accessToken ?? "";
+        }
+
         [HttpGet]
         [Route("strava")]
         public IActionResult Get()
         {
-            return Redirect("https://www.strava.com/oauth/authorize?client_id=66831&response_type=code&redirect_uri=https://localhost:7038/exchange_token&scope=read,activity:read,activity:read_all");
-
+            return Ok();
 
         }
 
@@ -63,6 +79,15 @@ namespace JohnnyBluhmWeb.Controllers
                 var res = await _httpClient.PostAsync(url, null);
 
                 var token = await res.Content.ReadAsStringAsync();
+
+
+
+
+
+
+
+
+
                 return true;
             }
             catch (Exception ex)

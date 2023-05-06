@@ -6,4 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\CachedData\Tokens\accessToken.txt" />
+    <None Include="wwwroot\CachedData\Tokens\refreshToken.txt" />
+  </ItemGroup>
+
 </Project>
