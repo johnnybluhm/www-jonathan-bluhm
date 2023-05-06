@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using JohnnyBluhmWeb.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -78,14 +80,15 @@ namespace JohnnyBluhmWeb.Controllers
             {
                 var res = await _httpClient.PostAsync(url, null);
 
-                var token = await res.Content.ReadAsStringAsync();
+                var oAuthResponse = await res.Content.ReadAsStringAsync();
 
+                var tokens = JsonSerializer.Deserialize<OAuthResponse>(oAuthResponse);
 
+                var writer = new StreamWriter($"{_env.WebRootPath}/CachedData/Tokens/refreshToken.txt");
+                writer.Write(tokens?.refresh_token);
 
-
-
-
-
+                writer = new StreamWriter($"{_env.WebRootPath}/CachedData/Tokens/accessToken.txt");
+                writer.Write(tokens?.access_token);
 
 
                 return true;
