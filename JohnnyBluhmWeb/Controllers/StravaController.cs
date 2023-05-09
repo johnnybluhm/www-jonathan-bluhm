@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
+using MongoDB.Driver;
+using MongoDB.Bson;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -176,10 +178,29 @@ namespace JohnnyBluhmWeb.Controllers
             return $"Done bitch in {timer.Elapsed.TotalMilliseconds}ms!";
         }
 
-        // POST api/<StravaController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpGet]
+        [Route("Mongo")]
+        public string Mongo()
         {
+            const string connectionUri = "mongodb+srv://bluhmjc:g5WeiRZhQRdjshwn@firstcluster.xntkwo7.mongodb.net/?retryWrites=true&w=majority";
+            var settings = MongoClientSettings.FromConnectionString(connectionUri);
+            // Set the ServerApi field of the settings object to Stable API version 1
+            settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+            // Create a new client and connect to the server
+            var client = new MongoClient(settings);
+            // Send a ping to confirm a successful connection
+            try
+            {
+                var result = client.GetDatabase("strava").GetCollection<BsonDocument>("activities");
+                var filter = Builders<BsonDocument>.Filter.Empty;
+                var data = result.Find(filter);
+                return $"Result is {result.ToJson()}";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return ex.Message;
+            }
         }
 
         // PUT api/<StravaController>/5
