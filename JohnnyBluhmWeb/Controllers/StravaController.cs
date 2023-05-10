@@ -182,7 +182,7 @@ namespace JohnnyBluhmWeb.Controllers
         [Route("Mongo")]
         public string Mongo()
         {
-            const string connectionUri = "mongodb+srv://bluhmjc:g5WeiRZhQRdjshwn@firstcluster.xntkwo7.mongodb.net/?retryWrites=true&w=majority";
+            const string connectionUri = "mongodb://localhost:27017";
             var settings = MongoClientSettings.FromConnectionString(connectionUri);
             // Set the ServerApi field of the settings object to Stable API version 1
             settings.ServerApi = new ServerApi(ServerApiVersion.V1);
@@ -191,10 +191,25 @@ namespace JohnnyBluhmWeb.Controllers
             // Send a ping to confirm a successful connection
             try
             {
-                var result = client.GetDatabase("strava").GetCollection<BsonDocument>("activities");
-                var filter = Builders<BsonDocument>.Filter.Empty;
-                var data = result.Find(filter);
-                return $"Result is {result.ToJson()}";
+                //client.GetDatabase("strava").CreateCollection("activities");
+                var bson = new BsonDocument();
+                var activity = new ActivityResponse();
+
+                activity.name = "test";
+                activity.id = 324567862121;
+                activity.start_date = DateTime.Now.ToString();
+                var db = client.GetDatabase("strava");
+                var collection = db.GetCollection<BsonDocument>("users");
+
+                var filter = Builders<BsonDocument>.Filter.Eq("_id", "645afb779fd07b5c4e164d25");
+                var test = FilterDefinition<BsonDocument>.Empty;
+                var results = collection.Find(filter);
+                
+                var docs = collection.CountDocuments(filter);
+                //var result = client.GetDatabase("strava").GetCollection<BsonDocument>("activities");
+
+                //var data = result.Find(filter);
+                return $"Result is {results.ToJson()}";
             }
             catch (Exception ex)
             {
