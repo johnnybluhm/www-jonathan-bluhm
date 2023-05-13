@@ -109,40 +109,9 @@ namespace JohnnyBluhmWeb.Controllers
         [HttpGet("GetAllFromFile")]
         public async Task<string> GetAllFromFile()
         {
-            var timer = new Stopwatch();
-            timer.Start();
-            int month = 0;
-            int year = 2020;
-            var activities = new List<ActivityResponse>();
+            await RefreshToken();
 
-            while (true)
-            {
-                try
-                {
-                    var fileStream = new StreamReader($"{_env.WebRootPath}/CachedData/Activities/activities-{month + 1}-{year}.txt");
-                    var activityString = fileStream.ReadToEnd();
-                    fileStream.Close();
-                    var activitiesFromOneMonth = JsonSerializer.Deserialize<List<ActivityResponse>>(activityString);
-                    activities.AddRange(activitiesFromOneMonth);
-                    //loop reseting
-                    month++;
-
-                    if (month % 12 == 0)
-                    {
-                        month = 0;
-                        year++;
-                    }
-                }
-                catch (FileNotFoundException)
-                {
-                    break;
-                }
-
-            }
-
-            timer.Stop();
-
-            foreach (var activity in activities)
+            /*foreach (var activity in activities)
             {
                 var url = $"https://www.strava.com/api/v3/activities/" + activity.id.ToString() + "?include_all_efforts=false";
                 var request = new HttpRequestMessage();
@@ -173,9 +142,9 @@ namespace JohnnyBluhmWeb.Controllers
                 {
                     return $"Caught execption: Message: {ex.Message}, Data: {ex.Data}";
                 }
-            }
+            }*/
 
-            return $"Done bitch in {timer.Elapsed.TotalMilliseconds}ms!";
+            return $"Done bitch!";
         }
 
         [HttpGet]
@@ -259,9 +228,66 @@ namespace JohnnyBluhmWeb.Controllers
             return false;
         }
 
-        private async void GetActivity()
+        private List<ActivityResponse> GetAllActivitiesFromFile()
         {
+            int month = 0;
+            int year = 2020;
+            var activities = new List<ActivityResponse>();
 
+            while (true)
+            {
+                try
+                {
+                    var fileStream = new StreamReader($"{_env.WebRootPath}/CachedData/Activities/activities-{month + 1}-{year}.txt");
+                    var activityString = fileStream.ReadToEnd();
+                    fileStream.Close();
+                    var activitiesFromOneMonth = JsonSerializer.Deserialize<List<ActivityResponse>>(activityString);
+                    activities.AddRange(activitiesFromOneMonth);
+                    //loop reseting
+                    month++;
+
+                    if (month % 12 == 0)
+                    {
+                        month = 0;
+                        year++;
+                    }
+                }
+                catch (FileNotFoundException)
+                {
+                    break;
+                }
+            }
+
+            return activities;
+        }
+
+        private async Task<bool> RefreshToken()
+        {
+            var url = $"https://www.strava.com/oauth/token?client_id=" + $"{clientId}&client_secret={clientSecret}&grant_type=refresh_token&refresh_token={refreshToken}";
+
+            try
+            {
+                var res = await _httpClient.PostAsync(url, null);
+
+                var oAuthResponse = await res.Content.ReadAsStringAsync();
+
+                var tokens = JsonSerializer.Deserialize<OAuthResponse>(oAuthResponse);
+
+                using var refreshWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/Tokens/refreshToken.txt");
+                refreshWriter.Write(tokens?.refresh_token);
+                refreshWriter.Close();
+
+                using var accessWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/Tokens/accessToken.txt");
+                accessWriter.Write(tokens?.access_token);
+                accessWriter.Close();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return false;
         }
     }
 }

@@ -7,13 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\CachedData\DetailedActivities\**" />
+    <Content Remove="wwwroot\CachedData\DetailedActivities\**" />
+    <EmbeddedResource Remove="wwwroot\CachedData\DetailedActivities\**" />
+    <None Remove="wwwroot\CachedData\DetailedActivities\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\CachedData\Tokens\accessToken.txt" />
     <None Include="wwwroot\CachedData\Tokens\refreshToken.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\CachedData\Activities\" />
-    <Folder Include="wwwroot\CachedData\DetailedActivities\" />
   </ItemGroup>
 
   <ItemGroup>
