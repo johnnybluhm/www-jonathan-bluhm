@@ -109,39 +109,37 @@ namespace JohnnyBluhmWeb.Controllers
         [HttpGet("GetAllFromFile")]
         public async Task<string> GetAllFromFile()
         {
-            await RefreshToken();
+            GetAllActivitiesFromFile();
 
             /*foreach (var activity in activities)
+            while (true)
             {
-                var url = $"https://www.strava.com/api/v3/activities/" + activity.id.ToString() + "?include_all_efforts=false";
-                var request = new HttpRequestMessage();
-                request.Method = HttpMethod.Get;
-                request.Headers.Add("Authorization", $"Bearer {accessToken}");
-                request.RequestUri = new Uri(url);
-
                 try
                 {
-                    var res = await _httpClient.SendAsync(request);
-                    //1577862000
-                    //2629743 one month epoch
-
-                    var content = await res.Content.ReadAsStringAsync();
-                    var activityDate = DateTime.Parse(activity.start_date);
-                    var dir = $"{_env.WebRootPath}/CachedData/DetailedActivities-{activityDate.Month}-{activityDate.Year}";
-                    bool exists = System.IO.Directory.Exists(dir);
-                    if (!exists)
-                    {
-                        System.IO.Directory.CreateDirectory(dir);
-                    }
-                    var fileStream = new StreamWriter($"{dir}/{activity.id}.txt");
-
-                    fileStream.WriteLine(content);
+                    var fileStream = new StreamReader($"{_env.WebRootPath}/CachedData/Activities/activities-{month + 1}-{year}.txt");
+                    var activityString = fileStream.ReadToEnd();
                     fileStream.Close();
+                    var activitiesFromOneMonth = JsonSerializer.Deserialize<List<ActivityResponse>>(activityString);
+                    activities.AddRange(activitiesFromOneMonth);
+                    //loop reseting
+                    month++;
+
+                    if (month % 12 == 0)
+                    {
+                        month = 0;
+                        year++;
+                    }
                 }
-                catch (Exception ex)
+                catch (FileNotFoundException)
                 {
-                    return $"Caught execption: Message: {ex.Message}, Data: {ex.Data}";
+                    break;
                 }
+
+            }
+            var doc = BsonDocument.Create(activities);
+            timer.Stop();
+
+            foreach (var activity in activities)
             }*/
 
             return $"Done bitch!";
@@ -169,11 +167,10 @@ namespace JohnnyBluhmWeb.Controllers
                 activity.start_date = DateTime.Now.ToString();
                 var db = client.GetDatabase("strava");
                 var collection = db.GetCollection<BsonDocument>("users");
-
                 var filter = Builders<BsonDocument>.Filter.Eq("_id", "645afb779fd07b5c4e164d25");
                 var test = FilterDefinition<BsonDocument>.Empty;
                 var results = collection.Find(filter);
-                
+                var doc = BsonDocument.Create(activity);
                 var docs = collection.CountDocuments(filter);
                 //var result = client.GetDatabase("strava").GetCollection<BsonDocument>("activities");
 
@@ -228,11 +225,11 @@ namespace JohnnyBluhmWeb.Controllers
             return false;
         }
 
-        private List<ActivityResponse> GetAllActivitiesFromFile()
+        private List<Models.StravaActivity> GetAllActivitiesFromFile()
         {
             int month = 0;
             int year = 2020;
-            var activities = new List<ActivityResponse>();
+            var activities = new List<Models.StravaActivity>();
 
             while (true)
             {
@@ -241,8 +238,8 @@ namespace JohnnyBluhmWeb.Controllers
                     var fileStream = new StreamReader($"{_env.WebRootPath}/CachedData/Activities/activities-{month + 1}-{year}.txt");
                     var activityString = fileStream.ReadToEnd();
                     fileStream.Close();
-                    var activitiesFromOneMonth = JsonSerializer.Deserialize<List<ActivityResponse>>(activityString);
-                    activities.AddRange(activitiesFromOneMonth);
+                    var activitiesFromOneMonth = JsonSerializer.Deserialize<List<Models.StravaActivity>>(activityString);
+                    activities.AddRange(activitiesFromOneMonth!);
                     //loop reseting
                     month++;
 
