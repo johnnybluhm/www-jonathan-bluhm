@@ -161,15 +161,7 @@ namespace JohnnyBluhmWeb.Controllers
             {
                 var db = client.GetDatabase("strava");
                 var collection = db.GetCollection<StravaActivity>("activities");
-                var filter = Builders<BsonDocument>.Filter.Eq("_id", "645afb779fd07b5c4e164d25");
-                var test = FilterDefinition<StravaActivity>.Empty;
-                
-                collection.InsertMany(GetAllActivitiesFromFile());
-
-                collection.Find(test);
-                //var result = client.GetDatabase("strava").GetCollection<BsonDocument>("activities");
-
-                var results = collection.Find(test);
+                var results = collection.Find(e => e.id.HasValue).ToList();
 
                 return $"Result is {results.ToJson()}";
             }
