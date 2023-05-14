@@ -24,7 +24,7 @@ namespace JohnnyBluhmWeb.Controllers
 
         private MongoClient mongoClient;
 
-        private const string connectionUri= "mongodb://localhost:27017";
+        private const string connectionUri = "mongodb://localhost:27017";
         public StravaController(IWebHostEnvironment hostingEnvironment)
         {
             _env = hostingEnvironment;
@@ -124,7 +124,7 @@ namespace JohnnyBluhmWeb.Controllers
             sendRequestToStrava:
                 var request = GetDetailedActivitiyRequest(activity.id);
                 try
-                {                    
+                {
                     var res = await _httpClient.SendAsync(request);
                     var content = await res.Content.ReadAsStringAsync();
                     bool retried = false;
@@ -133,7 +133,7 @@ namespace JohnnyBluhmWeb.Controllers
                         using var refreshWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/lastWrite.txt");
                         refreshWriter.Write($"{activity.start_date_local}");
                         refreshWriter.Close();
-                        if(!retried)
+                        if (!retried)
                         {
                             await Task.Delay(TimeSpan.FromMinutes(14));
                         }
@@ -175,7 +175,7 @@ namespace JohnnyBluhmWeb.Controllers
                 request.RequestUri = new Uri("https://www.strava.com/api/v3/activities/" + $"{activity.id.ToString()}/streams?keys=distance,altitude,heartrate,watts&key_by_type=true");
                 try
                 {
-                    var res = await _httpClient.SendAsync(request);                    
+                    var res = await _httpClient.SendAsync(request);
                     var content = await res.Content.ReadAsStringAsync();
                     bool retried = false;
                     if (content.Contains("Rate Limit Exceeded"))
