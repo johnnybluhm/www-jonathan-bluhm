@@ -120,10 +120,10 @@ namespace JohnnyBluhmWeb.Controllers
 
             foreach (var activity in filtered)
             {
+            sendRequestToStrava:
                 var request = GetDetailedActivitiyRequest(activity.id);
                 try
-                {
-                    sendRequestToStrava:
+                {                    
                     var res = await _httpClient.SendAsync(request);
                     var content = await res.Content.ReadAsStringAsync();
                     bool retried = false;
