@@ -175,11 +175,7 @@ namespace JohnnyBluhmWeb.Controllers
                 request.RequestUri = new Uri("https://www.strava.com/api/v3/activities/" + $"{activity.id.ToString()}/streams?keys=distance,altitude,heartrate,watts&key_by_type=true");
                 try
                 {
-                    var res = await _httpClient.SendAsync(request);
-                    if(res.StatusCode != HttpStatusCode.OK)
-                    {
-                        continue;
-                    }
+                    var res = await _httpClient.SendAsync(request);                    
                     var content = await res.Content.ReadAsStringAsync();
                     bool retried = false;
                     if (content.Contains("Rate Limit Exceeded"))
@@ -194,6 +190,10 @@ namespace JohnnyBluhmWeb.Controllers
                         retried = true;
                         await Task.Delay(TimeSpan.FromSeconds(30));
                         goto sendRequestToStrava;
+                    }
+                    if (res.StatusCode != HttpStatusCode.OK)
+                    {
+                        continue;
                     }
                     var model = JsonSerializer.Deserialize<ActivityStream>(content);
 
