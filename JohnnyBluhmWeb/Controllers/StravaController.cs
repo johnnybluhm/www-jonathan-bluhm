@@ -158,7 +158,7 @@ namespace JohnnyBluhmWeb.Controllers
         public async Task<string> GetStreams()
         {
             var db = mongoClient.GetDatabase("strava");
-            var collection = db.GetCollection<DetailedActivity>("detailedActivities");
+            var collection = db.GetCollection<ActivityStream>("streams");
 
             var activities = GetAllActivitiesFromFile();
             activities.Sort((x, y) => x.start_date_local.GetValueOrDefault().CompareTo(y.start_date_local.GetValueOrDefault()));
@@ -195,7 +195,7 @@ namespace JohnnyBluhmWeb.Controllers
                         await Task.Delay(TimeSpan.FromSeconds(30));
                         goto sendRequestToStrava;
                     }
-                    var model = JsonSerializer.Deserialize<DetailedActivity>(content);
+                    var model = JsonSerializer.Deserialize<ActivityStream>(content);
 
                     collection.InsertOne(model);
                 }
