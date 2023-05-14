@@ -82,6 +82,12 @@ namespace JohnnyBluhmWeb.Models
         public string embed_token { get; set; }
         public bool segment_leaderboard_opt_out { get; set; }
         public bool leaderboard_opt_out { get; set; }
+
+        [JsonIgnore]
+        public long? workout_type { get; set; }
+
+        [JsonIgnore]
+        public long? suffer_score { get; set; }
     }
     public class SplitsMetric
     {

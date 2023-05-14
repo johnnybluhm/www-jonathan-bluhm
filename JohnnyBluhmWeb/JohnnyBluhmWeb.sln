@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JohnnyBluhmWeb", "JohnnyBluhmWeb.csproj", "{B7164834-CBD9-4ACF-82AB-AF2E5974AE68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MognoServiceTests", "..\MognoServiceTests\MognoServiceTests.csproj", "{0981D245-574E-4845-B6D8-D0F995A8ECB2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoServiceTests", "..\MognoServiceTests\MongoServiceTests.csproj", "{0981D245-574E-4845-B6D8-D0F995A8ECB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

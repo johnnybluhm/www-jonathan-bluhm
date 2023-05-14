@@ -214,6 +214,7 @@ namespace JohnnyBluhmWeb.Controllers
         {
             try
             {
+                var filter = Builders<DetailedActivity>.Filter.Empty;
                 var db = mongoClient.GetDatabase("strava");
                 var collection = db.GetCollection<StravaActivity>("activities");
                 var results = collection.Find(e => e.id.HasValue).ToList();

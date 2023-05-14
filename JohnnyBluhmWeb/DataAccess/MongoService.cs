@@ -17,7 +17,7 @@ namespace JohnnyBluhmWeb.DataAccess
 
         public MongoService()
         {
-
+            SetUpMongo();
         }
 
         private void SetUpMongo()
@@ -26,7 +26,7 @@ namespace JohnnyBluhmWeb.DataAccess
             // Set the ServerApi field of the settings object to Stable API version 1
             settings.ServerApi = new ServerApi(ServerApiVersion.V1);
             // Create a new client and connect to the server
-            var client = new MongoClient(settings);
+            mongoClient = new MongoClient(settings);
             stravaDb = mongoClient.GetDatabase("strava");
             activitiesCollection = stravaDb.GetCollection<StravaActivity>(activitiesString);
             detailedActivitiesCollection = stravaDb.GetCollection<DetailedActivity>(detailedActivitiesString);
