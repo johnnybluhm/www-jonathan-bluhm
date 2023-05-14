@@ -109,39 +109,40 @@ namespace JohnnyBluhmWeb.Controllers
         [HttpGet("GetAllFromFile")]
         public async Task<string> GetAllFromFile()
         {
-            GetAllActivitiesFromFile();
-
-            /*foreach (var activity in activities)
-            while (true)
-            {
-                try
-                {
-                    var fileStream = new StreamReader($"{_env.WebRootPath}/CachedData/Activities/activities-{month + 1}-{year}.txt");
-                    var activityString = fileStream.ReadToEnd();
-                    fileStream.Close();
-                    var activitiesFromOneMonth = JsonSerializer.Deserialize<List<ActivityResponse>>(activityString);
-                    activities.AddRange(activitiesFromOneMonth);
-                    //loop reseting
-                    month++;
-
-                    if (month % 12 == 0)
-                    {
-                        month = 0;
-                        year++;
-                    }
-                }
-                catch (FileNotFoundException)
-                {
-                    break;
-                }
-
-            }
-            var doc = BsonDocument.Create(activities);
-            timer.Stop();
+            var activities = GetAllActivitiesFromFile();
 
             foreach (var activity in activities)
-            }*/
+            {
+                var url = $"https://www.strava.com/api/v3/activities/" + activity.id.ToString() + "?include_all_efforts=false";
+                var request = new HttpRequestMessage();
+                request.Method = HttpMethod.Get;
+                request.Headers.Add("Authorization", $"Bearer {accessToken}");
+                request.RequestUri = new Uri(url);
 
+                try
+                {
+                    var res = await _httpClient.SendAsync(request);
+                    //1577862000
+                    //2629743 one month epoch
+
+                    var content = await res.Content.ReadAsStringAsync();
+                    var activityDate = activity.start_date;
+                    var dir = $"{_env.WebRootPath}/CachedData/DetailedActivities-{activityDate.GetValueOrDefault().Month}-{activityDate.GetValueOrDefault().Year}";
+                    bool exists = System.IO.Directory.Exists(dir);
+                    if (!exists)
+                    {
+                        System.IO.Directory.CreateDirectory(dir);
+                    }
+                    var fileStream = new StreamWriter($"{dir}/{activity.id}.txt");
+
+                    fileStream.WriteLine(content);
+                    fileStream.Close();
+                }
+                catch (Exception ex)
+                {
+                    return $"Caught execption: Message: {ex.Message}, Data: {ex.Data}";
+                }
+            }
             return $"Done bitch!";
         }
 
@@ -158,23 +159,18 @@ namespace JohnnyBluhmWeb.Controllers
             // Send a ping to confirm a successful connection
             try
             {
-                //client.GetDatabase("strava").CreateCollection("activities");
-                var bson = new BsonDocument();
-                var activity = new ActivityResponse();
-
-                activity.name = "test";
-                activity.id = 324567862121;
-                activity.start_date = DateTime.Now.ToString();
                 var db = client.GetDatabase("strava");
-                var collection = db.GetCollection<BsonDocument>("users");
+                var collection = db.GetCollection<StravaActivity>("activities");
                 var filter = Builders<BsonDocument>.Filter.Eq("_id", "645afb779fd07b5c4e164d25");
-                var test = FilterDefinition<BsonDocument>.Empty;
-                var results = collection.Find(filter);
-                var doc = BsonDocument.Create(activity);
-                var docs = collection.CountDocuments(filter);
+                var test = FilterDefinition<StravaActivity>.Empty;
+                
+                collection.InsertMany(GetAllActivitiesFromFile());
+
+                collection.Find(test);
                 //var result = client.GetDatabase("strava").GetCollection<BsonDocument>("activities");
 
-                //var data = result.Find(filter);
+                var results = collection.Find(test);
+
                 return $"Result is {results.ToJson()}";
             }
             catch (Exception ex)
