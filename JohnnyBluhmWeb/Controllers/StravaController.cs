@@ -14,7 +14,6 @@ namespace JohnnyBluhmWeb.Controllers
     [ApiController]
     public class StravaController : ControllerBase
     {
-
         private static HttpClient _httpClient = new HttpClient();
         private string clientId = "66831";
         private string clientSecret = "a9d10ba407da3fecec77dbc0ec46163768294367";
@@ -24,12 +23,7 @@ namespace JohnnyBluhmWeb.Controllers
 
         private MongoClient mongoClient;
 
-
         private const string connectionUri= "mongodb://localhost:27017";
-
-
-
-
         public StravaController(IWebHostEnvironment hostingEnvironment)
         {
             _env = hostingEnvironment;
@@ -69,8 +63,6 @@ namespace JohnnyBluhmWeb.Controllers
 
             return "refreshed";
         }
-
-
 
         [HttpGet("GetAllFromFile")]
         public async Task<string> GetAllFromFile()
@@ -122,19 +114,31 @@ namespace JohnnyBluhmWeb.Controllers
             activities.Sort((x, y) => x.start_date_local.GetValueOrDefault().CompareTo(y.start_date_local.GetValueOrDefault()));
             activities.Reverse();
 
-            foreach (var activity in activities)
+            var newestDateNeeded = GetDateFromFileOfLastSuccesfulGetFromStrava();
+
+            var filtered = activities.Where(e => e.start_date_local.GetValueOrDefault().CompareTo(newestDateNeeded) < 0 || e.start_date_local.GetValueOrDefault().CompareTo(newestDateNeeded) == 0).ToList();
+
+            foreach (var activity in filtered)
             {
+                var request = GetDetailedActivitiyRequest(activity.id);
                 try
                 {
-                    var request = GetDetailedActivitiyRequest(activity.id);
+                    sendRequestToStrava:
                     var res = await _httpClient.SendAsync(request);
                     var content = await res.Content.ReadAsStringAsync();
+                    bool retried = false;
                     if (content.Contains("Rate Limit Exceeded"))
                     {
                         using var refreshWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/lastWrite.txt");
-                        refreshWriter.Write($"Activity date when rateLimitExceeded = date= {activity.start_date_local} and id = {activity.id}");
+                        refreshWriter.Write($"{activity.start_date_local}");
                         refreshWriter.Close();
-                        await Task.Delay(TimeSpan.FromMinutes(15));
+                        if(!retried)
+                        {
+                            await Task.Delay(TimeSpan.FromMinutes(14));
+                        }
+                        retried = true;
+                        await Task.Delay(TimeSpan.FromSeconds(30));
+                        goto sendRequestToStrava;
                     }
                     var model = JsonSerializer.Deserialize<DetailedActivity>(content);
 
@@ -168,20 +172,28 @@ namespace JohnnyBluhmWeb.Controllers
             }
         }
 
-        private async Task<DetailedActivity> SendRequestAndDeserialize(HttpRequestMessage request)
+        private DateTime GetDateFromFileOfLastSuccesfulGetFromStrava()
+        {
+            var accessReader = new StreamReader($"{_env.WebRootPath}/CachedData/lastWrite.txt");
+            var accessToken = accessReader.ReadToEnd();
+            accessReader.Close();
+            return DateTime.Parse(accessToken);
+        }
+
+        /*private async Task<DetailedActivity> SendRequestAndDeserialize(HttpRequestMessage request)
         {
             var res = await _httpClient.SendAsync(request);
             var content = await res.Content.ReadAsStringAsync();
             if (content.Contains("Rate Limit Exceeded"))
             {
                 using var refreshWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/lastWrite.txt");
-                refreshWriter.Write($"Activity date when rateLimitExceeded = date= {activity.start_date_local} and id = {activity.id}");
+                //refreshWriter.Write($"Activity date when rateLimitExceeded = date= {activity.start_date_local} and id = {activity.id}");
                 refreshWriter.Close();
                 await Task.Delay(TimeSpan.FromMinutes(15));
             }
             var model = JsonSerializer.Deserialize<DetailedActivity>(content);
             return model;
-        }
+        }*/
 
         private HttpRequestMessage GetDetailedActivitiyRequest(long? activityId)
         {
