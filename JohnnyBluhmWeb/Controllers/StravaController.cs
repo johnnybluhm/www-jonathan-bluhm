@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using MongoDB.Driver;
 using MongoDB.Bson;
+using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -133,6 +134,60 @@ namespace JohnnyBluhmWeb.Controllers
                         refreshWriter.Write($"{activity.start_date_local}");
                         refreshWriter.Close();
                         if(!retried)
+                        {
+                            await Task.Delay(TimeSpan.FromMinutes(14));
+                        }
+                        retried = true;
+                        await Task.Delay(TimeSpan.FromSeconds(30));
+                        goto sendRequestToStrava;
+                    }
+                    var model = JsonSerializer.Deserialize<DetailedActivity>(content);
+
+                    collection.InsertOne(model);
+                }
+                catch (Exception ex)
+                {
+                    return $"Caught execption: Message: {ex.Message}, Data: {ex.Data}";
+                }
+            }
+
+            return $"Done bitch!";
+        }
+
+        [HttpGet("streams")]
+        public async Task<string> GetStreams()
+        {
+            var db = mongoClient.GetDatabase("strava");
+            var collection = db.GetCollection<DetailedActivity>("detailedActivities");
+
+            var activities = GetAllActivitiesFromFile();
+            activities.Sort((x, y) => x.start_date_local.GetValueOrDefault().CompareTo(y.start_date_local.GetValueOrDefault()));
+            activities.Reverse();
+
+            var newestDateNeeded = GetDateFromFileOfLastSuccesfulGetFromStrava();
+
+            var filtered = activities.Where(e => e.start_date_local.GetValueOrDefault().CompareTo(newestDateNeeded) < 0 || e.start_date_local.GetValueOrDefault().CompareTo(newestDateNeeded) == 0).ToList();
+
+            foreach (var activity in activities)
+            {
+            sendRequestToStrava:
+                var request = GetDetailedActivitiyRequest(activity.id);
+                request.RequestUri = new Uri("https://www.strava.com/api/v3/activities/" + $"{activity.id.ToString()}/streams?keys=distance,altitude,heartrate,watts&key_by_type=true");
+                try
+                {
+                    var res = await _httpClient.SendAsync(request);
+                    if(res.StatusCode != HttpStatusCode.OK)
+                    {
+                        continue;
+                    }
+                    var content = await res.Content.ReadAsStringAsync();
+                    bool retried = false;
+                    if (content.Contains("Rate Limit Exceeded"))
+                    {
+                        using var refreshWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/lastWrite.txt");
+                        refreshWriter.Write($"{activity.start_date_local}");
+                        refreshWriter.Close();
+                        if (!retried)
                         {
                             await Task.Delay(TimeSpan.FromMinutes(14));
                         }
