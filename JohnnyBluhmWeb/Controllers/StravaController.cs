@@ -62,58 +62,15 @@ namespace JohnnyBluhmWeb.Controllers
             return "value";
         }
 
-        [HttpGet("GetAll")]
-        public async Task<string> GetAll()
+        [HttpGet("RefreshToken")]
+        public async Task<string> Refresh()
         {
-            /*var timer = new Stopwatch();
-            timer.Start();
-            var epoch2020 = 1577862000;
-            var epochOneMonth = 2629743;
-            var before = epoch2020 + epochOneMonth;
-            var after = epoch2020;
-            var epochNow = 1683363184;
-            int month = 0;
-            int year = 2020;
-            while (after < epochNow)
-            {
-                var url = $"https://www.strava.com/api/v3/athlete/activities?per_page=200&before=" + before.ToString() + "&after=" + after.ToString();
-                var request = new HttpRequestMessage();
-                request.Method = HttpMethod.Get;
-                request.Headers.Add("Authorization", $"Bearer {accessToken}");
-                request.RequestUri = new Uri(url);
+            await RefreshToken();
 
-                try
-                {
-                    var res = await _httpClient.SendAsync(request);
-                    //1577862000
-                    //2629743 one month epoch
-
-                    var content = await res.Content.ReadAsStringAsync();
-
-                    var fileStream = new StreamWriter($"{_env.WebRootPath}/CachedData/Activities/activities-{month + 1}-{year}.txt");
-
-                    fileStream.WriteLine(content);
-                    fileStream.Close();
-
-                    //loop reseting
-                    after = after + epochOneMonth;
-                    before = before + epochOneMonth;
-                    month++;
-                    if (month % 12 == 0)
-                    {
-                        month = 0;
-                        year++;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return ex.Message;
-                }
-            }
-            timer.Stop();
-            return $"Done bitch in {timer.Elapsed}!";*/
-            return "h";
+            return "refreshed";
         }
+
+
 
         [HttpGet("GetAllFromFile")]
         public async Task<string> GetAllFromFile()
@@ -155,35 +112,40 @@ namespace JohnnyBluhmWeb.Controllers
             return $"Done bitch!";
         }
 
-        [HttpGet("GetDetailedActivities")]
+        [HttpGet("go")]
         public async Task<string> GetDetailedActivities()
         {
-            var activities = GetAllActivitiesFromFile();
+            var db = mongoClient.GetDatabase("strava");
+            var collection = db.GetCollection<DetailedActivity>("detailedActivities");
 
-            
+            var activities = GetAllActivitiesFromFile();
+            activities.Sort((x, y) => x.start_date_local.GetValueOrDefault().CompareTo(y.start_date_local.GetValueOrDefault()));
+            activities.Reverse();
 
             foreach (var activity in activities)
             {
-                var url = $"https://www.strava.com/api/v3/activities/" + activity.id.ToString() + "?include_all_efforts=false";
-                var request = new HttpRequestMessage();
-                request.Method = HttpMethod.Get;
-                request.Headers.Add("Authorization", $"Bearer {accessToken}");
-                request.RequestUri = new Uri(url);
-
                 try
                 {
+                    var request = GetDetailedActivitiyRequest(activity.id);
                     var res = await _httpClient.SendAsync(request);
-                    //1577862000
-                    //2629743 one month epoch
-
                     var content = await res.Content.ReadAsStringAsync();
+                    if (content.Contains("Rate Limit Exceeded"))
+                    {
+                        using var refreshWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/lastWrite.txt");
+                        refreshWriter.Write($"Activity date when rateLimitExceeded = date= {activity.start_date_local} and id = {activity.id}");
+                        refreshWriter.Close();
+                        await Task.Delay(TimeSpan.FromMinutes(15));
+                    }
+                    var model = JsonSerializer.Deserialize<DetailedActivity>(content);
 
+                    collection.InsertOne(model);
                 }
                 catch (Exception ex)
                 {
                     return $"Caught execption: Message: {ex.Message}, Data: {ex.Data}";
                 }
             }
+
             return $"Done bitch!";
         }
 
@@ -206,16 +168,29 @@ namespace JohnnyBluhmWeb.Controllers
             }
         }
 
-        // PUT api/<StravaController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        private async Task<DetailedActivity> SendRequestAndDeserialize(HttpRequestMessage request)
         {
+            var res = await _httpClient.SendAsync(request);
+            var content = await res.Content.ReadAsStringAsync();
+            if (content.Contains("Rate Limit Exceeded"))
+            {
+                using var refreshWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/lastWrite.txt");
+                refreshWriter.Write($"Activity date when rateLimitExceeded = date= {activity.start_date_local} and id = {activity.id}");
+                refreshWriter.Close();
+                await Task.Delay(TimeSpan.FromMinutes(15));
+            }
+            var model = JsonSerializer.Deserialize<DetailedActivity>(content);
+            return model;
         }
 
-        // DELETE api/<StravaController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        private HttpRequestMessage GetDetailedActivitiyRequest(long? activityId)
         {
+            var url = $"https://www.strava.com/api/v3/activities/" + activityId.ToString() + "?include_all_efforts=false";
+            var request = new HttpRequestMessage();
+            request.Method = HttpMethod.Get;
+            request.Headers.Add("Authorization", $"Bearer {accessToken}");
+            request.RequestUri = new Uri(url);
+            return request;
         }
 
         private async Task<bool> GenerateNewToken(string code)
@@ -317,6 +292,59 @@ namespace JohnnyBluhmWeb.Controllers
             // Create a new client and connect to the server
             var client = new MongoClient(settings);
             return client;
+        }
+
+        [HttpGet("GetAll")]
+        public async Task<string> GetAll()
+        {
+            /*var timer = new Stopwatch();
+            timer.Start();
+            var epoch2020 = 1577862000;
+            var epochOneMonth = 2629743;
+            var before = epoch2020 + epochOneMonth;
+            var after = epoch2020;
+            var epochNow = 1683363184;
+            int month = 0;
+            int year = 2020;
+            while (after < epochNow)
+            {
+                var url = $"https://www.strava.com/api/v3/athlete/activities?per_page=200&before=" + before.ToString() + "&after=" + after.ToString();
+                var request = new HttpRequestMessage();
+                request.Method = HttpMethod.Get;
+                request.Headers.Add("Authorization", $"Bearer {accessToken}");
+                request.RequestUri = new Uri(url);
+
+                try
+                {
+                    var res = await _httpClient.SendAsync(request);
+                    //1577862000
+                    //2629743 one month epoch
+
+                    var content = await res.Content.ReadAsStringAsync();
+
+                    var fileStream = new StreamWriter($"{_env.WebRootPath}/CachedData/Activities/activities-{month + 1}-{year}.txt");
+
+                    fileStream.WriteLine(content);
+                    fileStream.Close();
+
+                    //loop reseting
+                    after = after + epochOneMonth;
+                    before = before + epochOneMonth;
+                    month++;
+                    if (month % 12 == 0)
+                    {
+                        month = 0;
+                        year++;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return ex.Message;
+                }
+            }
+            timer.Stop();
+            return $"Done bitch in {timer.Elapsed}!";*/
+            return "h";
         }
     }
 }
