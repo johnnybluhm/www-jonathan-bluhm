@@ -21,7 +21,14 @@ namespace JohnnyBluhmWeb.Controllers
         private string refreshToken;
         private string accessToken;
         private IWebHostEnvironment _env;
-        // GET: api/<StravaController>
+
+        private MongoClient mongoClient;
+
+
+        private const string connectionUri= "mongodb://localhost:27017";
+
+
+
 
         public StravaController(IWebHostEnvironment hostingEnvironment)
         {
@@ -39,6 +46,8 @@ namespace JohnnyBluhmWeb.Controllers
 
             this.refreshToken = refreshToken ?? "";
             this.accessToken = accessToken ?? "";
+
+            mongoClient = SetUpMongo();
         }
 
         // GET api/<StravaController>/5
@@ -146,20 +155,45 @@ namespace JohnnyBluhmWeb.Controllers
             return $"Done bitch!";
         }
 
+        [HttpGet("GetDetailedActivities")]
+        public async Task<string> GetDetailedActivities()
+        {
+            var activities = GetAllActivitiesFromFile();
+
+            
+
+            foreach (var activity in activities)
+            {
+                var url = $"https://www.strava.com/api/v3/activities/" + activity.id.ToString() + "?include_all_efforts=false";
+                var request = new HttpRequestMessage();
+                request.Method = HttpMethod.Get;
+                request.Headers.Add("Authorization", $"Bearer {accessToken}");
+                request.RequestUri = new Uri(url);
+
+                try
+                {
+                    var res = await _httpClient.SendAsync(request);
+                    //1577862000
+                    //2629743 one month epoch
+
+                    var content = await res.Content.ReadAsStringAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    return $"Caught execption: Message: {ex.Message}, Data: {ex.Data}";
+                }
+            }
+            return $"Done bitch!";
+        }
+
         [HttpGet]
         [Route("Mongo")]
         public string Mongo()
         {
-            const string connectionUri = "mongodb://localhost:27017";
-            var settings = MongoClientSettings.FromConnectionString(connectionUri);
-            // Set the ServerApi field of the settings object to Stable API version 1
-            settings.ServerApi = new ServerApi(ServerApiVersion.V1);
-            // Create a new client and connect to the server
-            var client = new MongoClient(settings);
-            // Send a ping to confirm a successful connection
             try
             {
-                var db = client.GetDatabase("strava");
+                var db = mongoClient.GetDatabase("strava");
                 var collection = db.GetCollection<StravaActivity>("activities");
                 var results = collection.Find(e => e.id.HasValue).ToList();
 
@@ -273,6 +307,16 @@ namespace JohnnyBluhmWeb.Controllers
                 return false;
             }
             return false;
+        }
+
+        private MongoClient SetUpMongo()
+        {
+            var settings = MongoClientSettings.FromConnectionString(connectionUri);
+            // Set the ServerApi field of the settings object to Stable API version 1
+            settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+            // Create a new client and connect to the server
+            var client = new MongoClient(settings);
+            return client;
         }
     }
 }
