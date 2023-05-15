@@ -208,49 +208,6 @@ namespace JohnnyBluhmWeb.Controllers
             return $"Done bitch!";
         }
 
-        [HttpGet]
-        [Route("Mongo")]
-        public string Mongo()
-        {
-            try
-            {
-                var filter = Builders<DetailedActivity>.Filter.Empty;
-                var db = mongoClient.GetDatabase("strava");
-                var collection = db.GetCollection<StravaActivity>("activities");
-                var results = collection.Find(e => e.id.HasValue).ToList();
-
-                return $"Result is {results.ToJson()}";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return ex.Message;
-            }
-        }
-
-        private DateTime GetDateFromFileOfLastSuccesfulGetFromStrava()
-        {
-            var accessReader = new StreamReader($"{_env.WebRootPath}/CachedData/lastWrite.txt");
-            var accessToken = accessReader.ReadToEnd();
-            accessReader.Close();
-            return DateTime.Parse(accessToken);
-        }
-
-        /*private async Task<DetailedActivity> SendRequestAndDeserialize(HttpRequestMessage request)
-        {
-            var res = await _httpClient.SendAsync(request);
-            var content = await res.Content.ReadAsStringAsync();
-            if (content.Contains("Rate Limit Exceeded"))
-            {
-                using var refreshWriter = new StreamWriter($"{_env.WebRootPath}/CachedData/lastWrite.txt");
-                //refreshWriter.Write($"Activity date when rateLimitExceeded = date= {activity.start_date_local} and id = {activity.id}");
-                refreshWriter.Close();
-                await Task.Delay(TimeSpan.FromMinutes(15));
-            }
-            var model = JsonSerializer.Deserialize<DetailedActivity>(content);
-            return model;
-        }*/
-
         private HttpRequestMessage GetDetailedActivitiyRequest(long? activityId)
         {
             var url = $"https://www.strava.com/api/v3/activities/" + activityId.ToString() + "?include_all_efforts=false";
@@ -360,6 +317,14 @@ namespace JohnnyBluhmWeb.Controllers
             // Create a new client and connect to the server
             var client = new MongoClient(settings);
             return client;
+        }
+
+        private DateTime GetDateFromFileOfLastSuccesfulGetFromStrava()
+        {
+            var accessReader = new StreamReader($"{_env.WebRootPath}/CachedData/lastWrite.txt");
+            var accessToken = accessReader.ReadToEnd();
+            accessReader.Close();
+            return DateTime.Parse(accessToken);
         }
 
         [HttpGet("GetAll")]
