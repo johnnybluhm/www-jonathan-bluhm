@@ -1,4 +1,6 @@
-﻿namespace JohnnyBluhmWeb.Models
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace JohnnyBluhmWeb.Models
 {
     // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class Altitude
@@ -25,6 +27,7 @@
         public string resolution { get; set; }
     }
 
+    [BsonIgnoreExtraElements]
     public class ActivityStream
     {
         public Watts watts { get; set; }

@@ -38,5 +38,14 @@ namespace MognoServiceTests
 
             Assert.True(result.ToList().Count > 0);
         }
+        
+        [Fact]
+        public async Task TestStreamsCollection()
+        {
+            var filter = Builders<ActivityStream>.Filter.Empty;
+            var result = await subject.streamCollection.FindAsync<ActivityStream>(filter);
+
+            Assert.True(result.ToList().Count > 0);
+        }
     }
 }
