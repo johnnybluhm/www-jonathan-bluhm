@@ -1,14 +1,9 @@
-﻿using JohnnyBluhmWeb.Models;
+﻿using JohnnyBluhmWeb.DataAccess;
+using JohnnyBluhmWeb.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using System.Text;
-using System.Text.Json;
 using MongoDB.Driver;
-using MongoDB.Bson;
 using System.Net;
-using JohnnyBluhmWeb.DataAccess;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System.Text.Json;
 
 namespace JohnnyBluhmWeb.Controllers
 {
@@ -28,25 +23,6 @@ namespace JohnnyBluhmWeb.Controllers
         {
             _env = hostingEnvironment;
             SetTokensToValueFromFile();
-        }
-
-        [HttpGet("exchange_token")]
-        public async Task<string> Exchange()
-        {
-            var url = ControllerContext.HttpContext.Request.Query;
-            HttpContext.Request.Query.TryGetValue("code", out var codeFromDict);
-
-            var success = await GenerateNewToken(codeFromDict);
-
-            return "value";
-        }
-
-        [HttpGet("RefreshToken")]
-        public async Task<string> Refresh()
-        {
-            await RefreshToken();
-
-            return "refreshed";
         }
 
         [HttpGet("go")]
@@ -95,6 +71,38 @@ namespace JohnnyBluhmWeb.Controllers
             }
 
             return $"Done bitch!";
+        }
+
+        [HttpGet("GetAll")]
+        public async Task<string> GetAllActivitiesSinceLastGetFromStrava()
+        {
+            var lastWrite = GetDateFromFileOfLastSuccesfulGetFromStrava();
+
+            TimeSpan t = lastWrite - new DateTime(1970, 1, 1);
+            int secondsSinceEpoch = (int)t.TotalSeconds;
+
+            var url = $"https://www.strava.com/api/v3/athlete/activities?per_page=200&after=" + secondsSinceEpoch;
+            var request = new HttpRequestMessage();
+            request.Method = HttpMethod.Get;
+            request.Headers.Add("Authorization", $"Bearer {accessToken}");
+            request.RequestUri = new Uri(url);
+
+            try
+            {
+                var res = await _httpClient.SendAsync(request);
+
+                var content = await res.Content.ReadAsStringAsync();
+
+                var model = JsonSerializer.Deserialize<List<StravaActivity>>(content);
+
+                mongoService.activitiesCollection.InsertMany(model);
+
+                return model.ToString();
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
 
         [HttpGet("streams")]
@@ -243,57 +251,23 @@ namespace JohnnyBluhmWeb.Controllers
             this.accessToken = accessToken ?? "";
         }
 
-        [HttpGet("GetAll")]
-        public async Task<string> GetAll()
+        [HttpGet("exchange_token")]
+        public async Task<string> Exchange()
         {
-            /*var timer = new Stopwatch();
-            timer.Start();
-            var epoch2020 = 1577862000;
-            var epochOneMonth = 2629743;
-            var before = epoch2020 + epochOneMonth;
-            var after = epoch2020;
-            var epochNow = 1683363184;
-            int month = 0;
-            int year = 2020;
-            while (after < epochNow)
-            {
-                var url = $"https://www.strava.com/api/v3/athlete/activities?per_page=200&before=" + before.ToString() + "&after=" + after.ToString();
-                var request = new HttpRequestMessage();
-                request.Method = HttpMethod.Get;
-                request.Headers.Add("Authorization", $"Bearer {accessToken}");
-                request.RequestUri = new Uri(url);
+            var url = ControllerContext.HttpContext.Request.Query;
+            HttpContext.Request.Query.TryGetValue("code", out var codeFromDict);
 
-                try
-                {
-                    var res = await _httpClient.SendAsync(request);
-                    //1577862000
-                    //2629743 one month epoch
+            var success = await GenerateNewToken(codeFromDict);
 
-                    var content = await res.Content.ReadAsStringAsync();
+            return "value";
+        }
 
-                    var fileStream = new StreamWriter($"{_env.WebRootPath}/CachedData/Activities/activities-{month + 1}-{year}.txt");
+        [HttpGet("RefreshToken")]
+        public async Task<string> Refresh()
+        {
+            await RefreshToken();
 
-                    fileStream.WriteLine(content);
-                    fileStream.Close();
-
-                    //loop reseting
-                    after = after + epochOneMonth;
-                    before = before + epochOneMonth;
-                    month++;
-                    if (month % 12 == 0)
-                    {
-                        month = 0;
-                        year++;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return ex.Message;
-                }
-            }
-            timer.Stop();
-            return $"Done bitch in {timer.Elapsed}!";*/
-            return "h";
+            return "refreshed";
         }
     }
 }
