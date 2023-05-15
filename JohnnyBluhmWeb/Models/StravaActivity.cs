@@ -1,7 +1,9 @@
 ﻿using Microsoft.Azure.Documents;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace JohnnyBluhmWeb.Models
 {
+    [BsonIgnoreExtraElements]
     public class StravaActivity
     {
         public long? resource_state { get; set; }

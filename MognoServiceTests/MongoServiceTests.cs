@@ -29,5 +29,14 @@ namespace MognoServiceTests
 
             Assert.True(result.ToList().Count > 0);
         }
+
+        [Fact]
+        public async Task TestActivitiesCollection()
+        {
+            var filter = Builders<StravaActivity>.Filter.Empty;
+            var result = await subject.activitiesCollection.FindAsync<StravaActivity>(filter);
+
+            Assert.True(result.ToList().Count > 0);
+        }
     }
 }
