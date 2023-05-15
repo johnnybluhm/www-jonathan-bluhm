@@ -118,7 +118,7 @@ namespace JohnnyBluhmWeb.Controllers
 
             var filtered = activities.Where(e => e.start_date_local.GetValueOrDefault().CompareTo(newestDateNeeded) < 0 || e.start_date_local.GetValueOrDefault().CompareTo(newestDateNeeded) == 0).ToList();
 
-            foreach (var activity in activities)
+            foreach (var activity in filtered)
             {
             sendRequestToStrava:
                 var request = GetDetailedActivitiyRequest(activity.id);
