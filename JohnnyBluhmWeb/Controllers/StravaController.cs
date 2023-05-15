@@ -6,6 +6,7 @@ using System.Text.Json;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using System.Net;
+using JohnnyBluhmWeb.DataAccess;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,10 +22,8 @@ namespace JohnnyBluhmWeb.Controllers
         private string refreshToken;
         private string accessToken;
         private IWebHostEnvironment _env;
+        private static MongoService mongoService = new MongoService();
 
-        private MongoClient mongoClient;
-
-        private const string connectionUri = "mongodb://localhost:27017";
         public StravaController(IWebHostEnvironment hostingEnvironment)
         {
             _env = hostingEnvironment;
@@ -41,11 +40,8 @@ namespace JohnnyBluhmWeb.Controllers
 
             this.refreshToken = refreshToken ?? "";
             this.accessToken = accessToken ?? "";
-
-            mongoClient = SetUpMongo();
         }
 
-        // GET api/<StravaController>/5
         [HttpGet("exchange_token")]
         public async Task<string> Exchange()
         {
@@ -65,10 +61,10 @@ namespace JohnnyBluhmWeb.Controllers
             return "refreshed";
         }
 
-        [HttpGet("GetAllFromFile")]
-        public async Task<string> GetAllFromFile()
+        [HttpGet("GetAllActivities")]
+        public async Task<string> GetAllActivities()
         {
-            var activities = GetAllActivitiesFromFile();
+            var activities = new List<StravaActivity>();
 
             foreach (var activity in activities)
             {
@@ -108,10 +104,9 @@ namespace JohnnyBluhmWeb.Controllers
         [HttpGet("go")]
         public async Task<string> GetDetailedActivities()
         {
-            var db = mongoClient.GetDatabase("strava");
-            var collection = db.GetCollection<DetailedActivity>("detailedActivities");
+            var collection = mongoService.detailedActivitiesCollection;
 
-            var activities = GetAllActivitiesFromFile();
+            var activities = new List<StravaActivity>();
             activities.Sort((x, y) => x.start_date_local.GetValueOrDefault().CompareTo(y.start_date_local.GetValueOrDefault()));
             activities.Reverse();
 
@@ -157,10 +152,9 @@ namespace JohnnyBluhmWeb.Controllers
         [HttpGet("streams")]
         public async Task<string> GetStreams()
         {
-            var db = mongoClient.GetDatabase("strava");
-            var collection = db.GetCollection<ActivityStream>("streams");
+            var collection = mongoService.streamCollection;
 
-            var activities = GetAllActivitiesFromFile();
+            var activities = new List<StravaActivity>();
             activities.Sort((x, y) => x.start_date_local.GetValueOrDefault().CompareTo(y.start_date_local.GetValueOrDefault()));
             activities.Reverse();
 
@@ -247,39 +241,6 @@ namespace JohnnyBluhmWeb.Controllers
             return false;
         }
 
-        private List<Models.StravaActivity> GetAllActivitiesFromFile()
-        {
-            int month = 0;
-            int year = 2020;
-            var activities = new List<Models.StravaActivity>();
-
-            while (true)
-            {
-                try
-                {
-                    var fileStream = new StreamReader($"{_env.WebRootPath}/CachedData/Activities/activities-{month + 1}-{year}.txt");
-                    var activityString = fileStream.ReadToEnd();
-                    fileStream.Close();
-                    var activitiesFromOneMonth = JsonSerializer.Deserialize<List<Models.StravaActivity>>(activityString);
-                    activities.AddRange(activitiesFromOneMonth!);
-                    //loop reseting
-                    month++;
-
-                    if (month % 12 == 0)
-                    {
-                        month = 0;
-                        year++;
-                    }
-                }
-                catch (FileNotFoundException)
-                {
-                    break;
-                }
-            }
-
-            return activities;
-        }
-
         private async Task<bool> RefreshToken()
         {
             var url = $"https://www.strava.com/oauth/token?client_id=" + $"{clientId}&client_secret={clientSecret}&grant_type=refresh_token&refresh_token={refreshToken}";
@@ -307,16 +268,6 @@ namespace JohnnyBluhmWeb.Controllers
                 return false;
             }
             return false;
-        }
-
-        private MongoClient SetUpMongo()
-        {
-            var settings = MongoClientSettings.FromConnectionString(connectionUri);
-            // Set the ServerApi field of the settings object to Stable API version 1
-            settings.ServerApi = new ServerApi(ServerApiVersion.V1);
-            // Create a new client and connect to the server
-            var client = new MongoClient(settings);
-            return client;
         }
 
         private DateTime GetDateFromFileOfLastSuccesfulGetFromStrava()
