@@ -61,46 +61,6 @@ namespace JohnnyBluhmWeb.Controllers
             return "refreshed";
         }
 
-        [HttpGet("GetAllActivities")]
-        public async Task<string> GetAllActivities()
-        {
-            var activities = new List<StravaActivity>();
-
-            foreach (var activity in activities)
-            {
-                var url = $"https://www.strava.com/api/v3/activities/" + activity.id.ToString() + "?include_all_efforts=false";
-                var request = new HttpRequestMessage();
-                request.Method = HttpMethod.Get;
-                request.Headers.Add("Authorization", $"Bearer {accessToken}");
-                request.RequestUri = new Uri(url);
-
-                try
-                {
-                    var res = await _httpClient.SendAsync(request);
-                    //1577862000
-                    //2629743 one month epoch
-
-                    var content = await res.Content.ReadAsStringAsync();
-                    var activityDate = activity.start_date;
-                    var dir = $"{_env.WebRootPath}/CachedData/DetailedActivities-{activityDate.GetValueOrDefault().Month}-{activityDate.GetValueOrDefault().Year}";
-                    bool exists = System.IO.Directory.Exists(dir);
-                    if (!exists)
-                    {
-                        System.IO.Directory.CreateDirectory(dir);
-                    }
-                    var fileStream = new StreamWriter($"{dir}/{activity.id}.txt");
-
-                    fileStream.WriteLine(content);
-                    fileStream.Close();
-                }
-                catch (Exception ex)
-                {
-                    return $"Caught execption: Message: {ex.Message}, Data: {ex.Data}";
-                }
-            }
-            return $"Done bitch!";
-        }
-
         [HttpGet("go")]
         public async Task<string> GetDetailedActivities()
         {
