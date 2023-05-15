@@ -22,12 +22,12 @@ namespace MognoServiceTests
         }
 
         [Fact]
-        public async Task TestUsersCollection()
+        public async Task TestDetailedActivitiesCollection()
         {
             var filter = Builders<DetailedActivity>.Filter.Empty;
             var result = await subject.detailedActivitiesCollection.FindAsync<DetailedActivity>(filter);
 
-            Assert.NotNull(result);
+            Assert.True(result.ToList().Count > 0);
         }
     }
 }
