@@ -27,19 +27,7 @@ namespace JohnnyBluhmWeb.Controllers
         public StravaController(IWebHostEnvironment hostingEnvironment)
         {
             _env = hostingEnvironment;
-            var refreshReader = new StreamReader($"{hostingEnvironment.WebRootPath}/CachedData/Tokens/refreshToken.txt");
-            var refreshToken = refreshReader.ReadToEnd();
-            refreshReader.Close();
-
-            var accessReader = new StreamReader($"{hostingEnvironment.WebRootPath}/CachedData/Tokens/accessToken.txt");
-            var accessToken = accessReader.ReadToEnd();
-            accessReader.Close();
-
-            refreshReader.Dispose();
-            accessReader.Dispose();
-
-            this.refreshToken = refreshToken ?? "";
-            this.accessToken = accessToken ?? "";
+            SetTokensToValueFromFile();
         }
 
         [HttpGet("exchange_token")]
@@ -236,6 +224,23 @@ namespace JohnnyBluhmWeb.Controllers
             var accessToken = accessReader.ReadToEnd();
             accessReader.Close();
             return DateTime.Parse(accessToken);
+        }
+
+        private void SetTokensToValueFromFile()
+        {
+            var refreshReader = new StreamReader($"{_env.WebRootPath}/CachedData/Tokens/refreshToken.txt");
+            var refreshToken = refreshReader.ReadToEnd();
+            refreshReader.Close();
+
+            var accessReader = new StreamReader($"{_env.WebRootPath}/CachedData/Tokens/accessToken.txt");
+            var accessToken = accessReader.ReadToEnd();
+            accessReader.Close();
+
+            refreshReader.Dispose();
+            accessReader.Dispose();
+
+            this.refreshToken = refreshToken ?? "";
+            this.accessToken = accessToken ?? "";
         }
 
         [HttpGet("GetAll")]
