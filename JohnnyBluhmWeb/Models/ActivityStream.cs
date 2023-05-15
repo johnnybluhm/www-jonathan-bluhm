@@ -34,6 +34,9 @@ namespace JohnnyBluhmWeb.Models
         public Distance distance { get; set; }
         public Heartrate heartrate { get; set; }
         public Altitude altitude { get; set; }
+
+        [BsonId]
+        public long id { get; set; }
     }
 
     public class Watts

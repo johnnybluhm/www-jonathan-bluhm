@@ -110,7 +110,7 @@ namespace JohnnyBluhmWeb.Controllers
         {
             var collection = mongoService.streamCollection;
 
-            var activities = new List<StravaActivity>();
+            var activities = mongoService.activitiesCollection.Find(Builders<StravaActivity>.Filter.Empty).ToList();
             activities.Sort((x, y) => x.start_date_local.GetValueOrDefault().CompareTo(y.start_date_local.GetValueOrDefault()));
             activities.Reverse();
 
@@ -141,12 +141,12 @@ namespace JohnnyBluhmWeb.Controllers
                         await Task.Delay(TimeSpan.FromSeconds(30));
                         goto sendRequestToStrava;
                     }
-                    if (res.StatusCode != HttpStatusCode.OK)
+                    if (res.StatusCode == HttpStatusCode.NotFound)
                     {
                         continue;
                     }
                     var model = JsonSerializer.Deserialize<ActivityStream>(content);
-
+                    model.id = activity.id.GetValueOrDefault();
                     collection.InsertOne(model);
                 }
                 catch (Exception ex)
