@@ -9,7 +9,7 @@ namespace JohnnyBluhmWeb.Controllers
 {
     [Route("api/")]
     [ApiController]
-    public class StravaController : ControllerBase
+    public class StravaApi : ControllerBase
     {
         private static HttpClient _httpClient = new HttpClient();
         private string clientId = "66831";
@@ -19,7 +19,7 @@ namespace JohnnyBluhmWeb.Controllers
         private IWebHostEnvironment _env;
         private static MongoService mongoService = new MongoService();
 
-        public StravaController(IWebHostEnvironment hostingEnvironment)
+        public StravaApi(IWebHostEnvironment hostingEnvironment)
         {
             _env = hostingEnvironment;
             SetTokensToValueFromFile();
