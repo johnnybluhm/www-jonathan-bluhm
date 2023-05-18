@@ -49,5 +49,13 @@ namespace JohnnyBluhmWeb.Controllers
             var result = await mongoService.heartRateCollection.FindAsync<HeartRateStream>(filter);
             return JsonConvert.SerializeObject(result.ToList());
         }
+        [HttpGet]
+        [Route("GetAllPowerStreams")]
+        public async Task<string> GetAllPowerStreams()
+        {
+            var filter = Builders<PowerStream>.Filter.Empty;
+            var result = await mongoService.powerCollection.FindAsync<PowerStream>(filter);
+            return JsonConvert.SerializeObject(result.ToList());
+        }
     }
 }
