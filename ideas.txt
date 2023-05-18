@@ -11,3 +11,11 @@ On the main page have like a timeline, they can click on events in the timeline 
 Book review kinda page. Like it can list books and I can give a rating
 
 Add a footer with links to other things
+
+
+Ok, to get time in zone data, My minimum unit for time in zone will be a week. So I could see time in zones for each week. This way I can caluclate each further split using the weeks.
+So if I want time in zone for May, just add up the weeks there. This way I can do one massive calculation, but then once that is done quickly have access to better chunks of data.
+
+
+Also, thgere is cool anmalysis I can do. Like I can correlate time of day with watts or something to see. Also curious like where the hardest rides are. That could be good for analyzing 
+how I periodize. Ideally you would see the hardest rides all split up 3 weeks apart over ther ytear. You can see how the overload is oging as well.
