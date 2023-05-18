@@ -33,15 +33,6 @@ namespace JohnnyBluhmWeb.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllStreams")]
-        public async Task<IEnumerable<ActivityStream>> GetAllStreams()
-        {
-            var filter = Builders<ActivityStream>.Filter.Empty;
-            var result = await mongoService.streamCollection.FindAsync<ActivityStream>(filter);
-            return result.ToList();
-        }
-
-        [HttpGet]
         [Route("GetAllHrStreams")]
         public async Task<string> GetAllHrStreams()
         {
