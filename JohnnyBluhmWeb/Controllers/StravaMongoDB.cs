@@ -2,6 +2,7 @@
 using JohnnyBluhmWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -38,6 +39,15 @@ namespace JohnnyBluhmWeb.Controllers
             var filter = Builders<ActivityStream>.Filter.Empty;
             var result = await mongoService.streamCollection.FindAsync<ActivityStream>(filter);
             return result.ToList();
+        }
+
+        [HttpGet]
+        [Route("GetAllHrStreams")]
+        public async Task<string> GetAllHrStreams()
+        {
+            var filter = Builders<HeartRateStream>.Filter.Empty;
+            var result = await mongoService.heartRateCollection.FindAsync<HeartRateStream>(filter);
+            return JsonConvert.SerializeObject(result.ToList());
         }
     }
 }
