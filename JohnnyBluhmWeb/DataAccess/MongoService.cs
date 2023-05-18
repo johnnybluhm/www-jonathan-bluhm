@@ -11,12 +11,13 @@ namespace JohnnyBluhmWeb.DataAccess
         private const string detailedActivitiesString = "detailedActivities";
         private const string streamsString = "streams";
         private const string hrString = "hrStreams";
+        private const string powerString = "powerStreams";
         private IMongoDatabase stravaDb;
         public IMongoCollection<StravaActivity> activitiesCollection;
         public IMongoCollection<DetailedActivity> detailedActivitiesCollection;
         public IMongoCollection<ActivityStream> streamCollection;
         public IMongoCollection<HeartRateStream> heartRateCollection;
-
+        public IMongoCollection<PowerStream> powerCollection;
         public MongoService()
         {
             SetUpMongo();
@@ -34,6 +35,7 @@ namespace JohnnyBluhmWeb.DataAccess
             detailedActivitiesCollection = stravaDb.GetCollection<DetailedActivity>(detailedActivitiesString);
             streamCollection = stravaDb.GetCollection<ActivityStream>(streamsString);
             heartRateCollection = stravaDb.GetCollection<HeartRateStream>(hrString);
+            powerCollection = stravaDb.GetCollection<PowerStream>(powerString);
         }
     }
 }

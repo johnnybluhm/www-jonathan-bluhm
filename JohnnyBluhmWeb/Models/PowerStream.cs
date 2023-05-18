@@ -4,7 +4,7 @@ namespace JohnnyBluhmWeb.Models
 {
     public class PowerStream
     {
-        public Dictionary<int, int> powerDict = new Dictionary<int, int>();
+        public Dictionary<string, string> powerDict = new Dictionary<string, string>();
 
         [BsonId]
         public long id;
