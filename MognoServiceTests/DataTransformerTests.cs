@@ -18,11 +18,15 @@ namespace MongoServiceTests
         }
 
         [Fact]
-        public async void TestStreamConverter()
+        public async void TestStreamConverterForHr()
         {
             await mongoService.ConvertHrStreamsToBetterStreams();
+        }
 
-
+        [Fact]
+        public async void TestStreamConverterForPower()
+        {
+            await mongoService.ConvertPowerStreamsToBetterStreams();
         }
     }
 }

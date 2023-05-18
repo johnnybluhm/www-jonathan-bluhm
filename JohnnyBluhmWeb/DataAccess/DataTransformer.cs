@@ -21,7 +21,7 @@ namespace JohnnyBluhmWeb.DataAccess
                     }
                     var hrStream = activityStream?.heartrate?.data;
 
-                    if(hrStream is null)
+                    if (hrStream is null)
                     {
                         continue;
                     }
@@ -34,7 +34,7 @@ namespace JohnnyBluhmWeb.DataAccess
                         if (betterHrStream.heartRateDict.ContainsKey(hrKey.ToString()))
                         {
                             betterHrStream.heartRateDict.TryGetValue(hrKey.ToString(), out var count);
-                            if(count is null)
+                            if (count is null)
                             {
                                 continue;
                             }
@@ -48,6 +48,55 @@ namespace JohnnyBluhmWeb.DataAccess
                     betterHrStream.id = activityStream!.id;
 
                     InsertIntoMongo(betterHrStream);
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task ConvertPowerStreamsToBetterStreams()
+        {
+            try
+            {
+                var activityStreams = await GetActivtyStreams();
+
+                foreach (var activityStream in activityStreams)
+                {
+                    if (activityStream.watts is null || activityStream.watts.data is null)
+                    {
+                        continue;
+                    }
+                    var powerStream = activityStream?.watts?.data;
+
+                    if (powerStream is null)
+                    {
+                        continue;
+                    }
+
+                    var betterPowerStream = new PowerStream();
+
+                    for (int i = 0; i < powerStream.Count; i++)
+                    {
+                        var hrKey = powerStream[i];
+                        if (betterPowerStream.powerDict.ContainsKey(hrKey.ToString()))
+                        {
+                            betterPowerStream.powerDict.TryGetValue(hrKey.ToString(), out var count);
+                            if (count is null)
+                            {
+                                continue;
+                            }
+                            betterPowerStream.powerDict[hrKey.ToString()] = (int.Parse(count) + 1).ToString();
+                        }
+                        else
+                        {
+                            betterPowerStream.powerDict.Add(hrKey.ToString(), "1");
+                        }
+                    }
+                    betterPowerStream.id = activityStream!.id;
+
+                    InsertIntoMongo(betterPowerStream);
                 }
             }
             catch
@@ -71,8 +120,17 @@ namespace JohnnyBluhmWeb.DataAccess
             }
             catch (MongoException e)
             {
-                var ex = e;
+            }
+        }
 
+        private void InsertIntoMongo(PowerStream powerStream)
+        {
+            try
+            {
+                mongoService.powerCollection.InsertOne(powerStream);
+            }
+            catch (MongoException e)
+            {
             }
         }
     }
