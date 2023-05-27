@@ -18,6 +18,11 @@ namespace JohnnyBluhmWeb.Controllers
             return View("Johnny");
         }
 
+        public IActionResult Strava()
+        {
+            return View();
+        }
+
         public IActionResult Prece1()
         {
             return View();
