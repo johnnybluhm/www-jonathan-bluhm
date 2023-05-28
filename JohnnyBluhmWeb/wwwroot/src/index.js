@@ -8,7 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const auto_1 = __importDefault(require("chart.js/auto"));
 let globalModel = {
     "1": 0,
     "2": 0,
@@ -38,7 +42,31 @@ function main() {
                 globalModel[zoneString] += Number.parseInt(timeAtPowerInSeconds);
             }
         }
-        console.log(globalModel);
+        console.log("Valkues");
+        console.log(Object.values(globalModel));
+        const ctx = document.getElementById('myChart');
+        var data = Object.values(globalModel);
+        var dataInMinutes = data.map(x => x / 60 / 60);
+        console.log("In Chart js");
+        console.log(Object.values(globalModel));
+        new auto_1.default(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Zone 1', 'Zone 2', 'Zone 3', 'Zone 4', 'Zone 5', 'Zone 6', 'Zone 7'],
+                datasets: [{
+                        label: 'Time in Zone (minutes)',
+                        data: dataInMinutes,
+                        borderWidth: 1
+                    }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
     });
 }
 function getZone(power) {
@@ -61,9 +89,17 @@ function getZone(power) {
     else if (powerAsNumber > 288 && powerAsNumber <= 360) {
         return 6;
     }
-    else if (powerAsNumber <= 360) {
+    else if (powerAsNumber >= 360) {
         return 7;
     }
     return 1;
 }
-main();
+(() => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield main();
+    }
+    catch (e) {
+        console.error(e);
+    }
+    // `text` is not available here
+}))();

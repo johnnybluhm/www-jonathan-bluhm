@@ -2,19 +2,19 @@
     <canvas id="myChart"></canvas>
 </div>
 <script>var exports = {};</script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="/src/index.js"></script>
+<script src="/dist/main.js" async></script>
 
 <script>
-      const ctx = document.getElementById('myChart');
-
+      /*const ctx = document.getElementById('myChart');
+      console.log("In Chart js");
+      console.log(Object.values(globalModel));
       new Chart(ctx, {
         type: 'bar',
         data: {
           labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
           datasets: [{
             label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
+            data: Object.values(globalModel),
             borderWidth: 1
           }]
         },
@@ -25,7 +25,7 @@
             }
           }
         }
-      });
+      });*/
 
 
 

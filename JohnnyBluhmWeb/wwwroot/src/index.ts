@@ -1,4 +1,6 @@
-﻿import { PowerStream } from "./models/powerStream";
+﻿import * as chartJs from "chart.js";
+import { PowerStream } from "./models/powerStream";
+import Chart from 'chart.js/auto';
 let globalModel: { [index: string]: number } = {
     "1": 0,
     "2": 0,
@@ -27,7 +29,32 @@ async function main() {
             globalModel[zoneString] += Number.parseInt(timeAtPowerInSeconds);
         }
     }
-    console.log(globalModel);
+    console.log("Valkues");
+    console.log(Object.values(globalModel));
+    const ctx = document.getElementById('myChart') as chartJs.ChartItem;
+
+    var data = Object.values(globalModel);
+    var dataInMinutes = data.map(x => x / 60 /60);
+    console.log("In Chart js");
+    console.log(Object.values(globalModel));
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Zone 1', 'Zone 2', 'Zone 3', 'Zone 4', 'Zone 5', 'Zone 6', 'Zone 7'],
+            datasets: [{
+                label: 'Time in Zone (minutes)',
+                data: dataInMinutes,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
 }
 
 function getZone(power: string) : number{
@@ -47,10 +74,10 @@ function getZone(power: string) : number{
     else if (powerAsNumber > 252 && powerAsNumber <= 288) {
         return 5;
     }
-    else if (powerAsNumber > 288 && powerAsNumber <=360) {
+    else if (powerAsNumber > 288 && powerAsNumber <= 360) {
         return 6;
     }
-    else if (powerAsNumber <= 360) {
+    else if (powerAsNumber >= 360) {
         return 7;
     }
     return 1;
