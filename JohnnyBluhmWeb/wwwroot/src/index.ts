@@ -55,7 +55,14 @@ function getZone(power: string) : number{
     }
     return 1;
 }
-main();
+(async () => {
+    try {
+        await main();
+    } catch (e) {
+        console.error(e);
+    }
+    // `text` is not available here
+})();
 
 
 
