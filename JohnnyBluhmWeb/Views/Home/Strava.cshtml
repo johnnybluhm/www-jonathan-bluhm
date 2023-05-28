@@ -1,8 +1,9 @@
 ﻿<div>
     <canvas id="myChart"></canvas>
 </div>
-
+<script>var exports = {};</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/src/index.js"></script>
 
 <script>
       const ctx = document.getElementById('myChart');
@@ -29,7 +30,7 @@
 
 
 
-      async function GetModel() {
+      /*async function GetModel() {
         var url = "https://localhost:7038/api/stravaMongo/GetAllPowerStreams";
 
         var result = await fetch(url);
@@ -38,5 +39,5 @@
     }
 
 
-    var data = await GetModel();
+    var data = await GetModel();*/
 </script>
