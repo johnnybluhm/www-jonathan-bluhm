@@ -38,6 +38,7 @@ function main() {
                 globalModel[zoneString] += Number.parseInt(timeAtPowerInSeconds);
             }
         }
+        console.log(globalModel);
     });
 }
 function getZone(power) {
