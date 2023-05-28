@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chart.js": "^4.3.0",
     "typescript": "^5.0.4",
     "webpack": "^5.83.1"
   }
