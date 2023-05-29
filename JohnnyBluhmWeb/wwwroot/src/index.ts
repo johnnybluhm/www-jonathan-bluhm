@@ -1,18 +1,12 @@
 ﻿import * as chartJs from "chart.js";
 import { PowerStream } from "./models/powerStream";
 import Chart from 'chart.js/auto';
-
-async function getPowerData() : Promise<PowerStream[]> {
-    var url = "https://localhost:7038/api/stravaMongo/GetAllPowerStreams";
-
-    var result = await fetch(url);
-    var data = await result.json() as PowerStream[];
-    console.log(data);
-    return data;
-}
+import { StravaApiClient } from "./apiClient";
 
 async function main() {
-    var powerStreams = await getPowerData();
+
+    let client = new StravaApiClient();
+    var powerStreams = await client.getPowerData();
     const ctx = document.getElementById('myChart') as chartJs.ChartItem;
 
     var timeInZoneList = GetTimeInZoneList(powerStreams);
