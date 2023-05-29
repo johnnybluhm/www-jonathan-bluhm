@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -36,5 +36,10 @@
     <TypeScriptCompile Include="wwwroot\src\apiClient.ts" />
     <TypeScriptCompile Include="wwwroot\src\index.ts" />
   </ItemGroup>
+
+	<Target Name="buildTs">
+		<Exec Command="echo Compiling TS" />
+		<Exec Command="npx webpack" WorkingDirectory="wwwroot"/>
+	</Target>
 
 </Project>
