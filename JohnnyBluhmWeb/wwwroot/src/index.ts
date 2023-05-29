@@ -2,17 +2,19 @@
 import Chart, { ChartItem } from 'chart.js/auto';
 import { StravaApiClient } from "./apiClient";
 import { ChartGenerator } from "./chartGenerator";
-
+let chartGenerator: ChartGenerator;
 async function main() {
-
+    let button = document.getElementById("switch") as HTMLButtonElement;
+    
     let client = new StravaApiClient();
-    let chartGenerator = new ChartGenerator();
+    
     var powerStreams = await client.getPowerData();
-    let chart = document.getElementById('myChart') as ChartItem;
+    
 
     var timeInZoneList = GetTimeInZoneList(powerStreams);
-    var dataInMinutes = timeInZoneList.map(x => x / 60 /60);
-    chartGenerator.createHoursChart(chart, dataInMinutes);
+    chartGenerator = new ChartGenerator(timeInZoneList);
+    chartGenerator.createHoursChart();
+    button.addEventListener("click", () => chartGenerator.createMinutesChart());
 }
 
 function getZone(power: string) : number{
