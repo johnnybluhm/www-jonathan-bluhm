@@ -1,34 +1,18 @@
-﻿import * as chartJs from "chart.js";
-import { PowerStream } from "./models/powerStream";
-import Chart from 'chart.js/auto';
+﻿import { PowerStream } from "./models/powerStream";
+import Chart, { ChartItem } from 'chart.js/auto';
 import { StravaApiClient } from "./apiClient";
+import { ChartGenerator } from "./chartGenerator";
 
 async function main() {
 
     let client = new StravaApiClient();
+    let chartGenerator = new ChartGenerator();
     var powerStreams = await client.getPowerData();
-    const ctx = document.getElementById('myChart') as chartJs.ChartItem;
+    let chart = document.getElementById('myChart') as ChartItem;
 
     var timeInZoneList = GetTimeInZoneList(powerStreams);
     var dataInMinutes = timeInZoneList.map(x => x / 60 /60);
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Zone 1', 'Zone 2', 'Zone 3', 'Zone 4', 'Zone 5', 'Zone 6', 'Zone 7'],
-            datasets: [{
-                label: 'Time in Zone (hours)',
-                data: dataInMinutes,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+    chartGenerator.createHoursChart(chart, dataInMinutes);
 }
 
 function getZone(power: string) : number{
