@@ -1,15 +1,7 @@
 ﻿import * as chartJs from "chart.js";
 import { PowerStream } from "./models/powerStream";
 import Chart from 'chart.js/auto';
-let globalModel: { [index: string]: number } = {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0,
-    "6": 0,
-    "7": 0,
-} ;
+
 async function getPowerData() : Promise<PowerStream[]> {
     var url = "https://localhost:7038/api/stravaMongo/GetAllPowerStreams";
 
@@ -21,28 +13,16 @@ async function getPowerData() : Promise<PowerStream[]> {
 
 async function main() {
     var powerStreams = await getPowerData();
-    for (var powerStream of powerStreams) {
-        for (let key in powerStream.powerDict) {
-            let timeAtPowerInSeconds = powerStream.powerDict[key];
-            let zone = getZone(key);
-            let zoneString = zone.toString() as string;
-            globalModel[zoneString] += Number.parseInt(timeAtPowerInSeconds);
-        }
-    }
-    console.log("Valkues");
-    console.log(Object.values(globalModel));
     const ctx = document.getElementById('myChart') as chartJs.ChartItem;
 
-    var data = Object.values(globalModel);
-    var dataInMinutes = data.map(x => x / 60 /60);
-    console.log("In Chart js");
-    console.log(Object.values(globalModel));
+    var timeInZoneList = GetTimeInZoneList(powerStreams);
+    var dataInMinutes = timeInZoneList.map(x => x / 60 /60);
     new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['Zone 1', 'Zone 2', 'Zone 3', 'Zone 4', 'Zone 5', 'Zone 6', 'Zone 7'],
             datasets: [{
-                label: 'Time in Zone (minutes)',
+                label: 'Time in Zone (hours)',
                 data: dataInMinutes,
                 borderWidth: 1
             }]
@@ -82,15 +62,34 @@ function getZone(power: string) : number{
     }
     return 1;
 }
+
+function GetTimeInZoneList(powerStreams: PowerStream[]): number[] {
+    let timeInZoneDict: { [index: string]: number } = {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+    };
+
+    for (var powerStream of powerStreams) {
+        for (let key in powerStream.powerDict) {
+            let timeAtPowerInSeconds = powerStream.powerDict[key];
+            let zone = getZone(key);
+            let zoneString = zone.toString() as string;
+            timeInZoneDict[zoneString] += Number.parseInt(timeAtPowerInSeconds);
+        }
+    }
+
+    return Object.values(timeInZoneDict);
+}
+
 (async () => {
     try {
         await main();
     } catch (e) {
         console.error(e);
     }
-    // `text` is not available here
 })();
-
-
-
-
