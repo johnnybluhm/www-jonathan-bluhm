@@ -18,7 +18,7 @@ async function main() {
     var timeInZoneList = GetTimeInZoneList(powerStreams);
     chartGenerator = new ChartGenerator(timeInZoneList);
     chartGenerator.createHoursChart();
-    //button.addEventListener("click", () => chartGenerator.createMinutesChart());
+    button.addEventListener("click", () => chartGenerator.createMinutesChart());
 }
 
 function getZone(power: string) : number{
