@@ -79,7 +79,7 @@ export class PowerChartGenerator extends ChartGenerator {
         const data = {
             labels: ['Zone 1', 'Zone 2', 'Zone 3', 'Zone 4', 'Zone 5', 'Zone 6', 'Zone 7'],
             datasets: [{
-                label: 'Time in Zone',
+                label: 'Time in Zone (hours)',
                 data: this.data.map(x => x / 3600),
                 hoverOffset: 4
             }]
