@@ -5,9 +5,13 @@ export class ChartGenerator {
     powerChart: Chart;
     chartItem: ChartItem;
     data: number[];
+    button: HTMLButtonElement;
+    isMinutes: boolean
     constructor(data: number[]) {
         this.chartItem = document.getElementById('myChart') as ChartItem;
         this.data = data;
+        this.button = document.getElementById("switch") as HTMLButtonElement;
+        this.isMinutes;
     }
 
     createHoursChart() {
@@ -32,6 +36,7 @@ export class ChartGenerator {
                 }
             }
         });
+        this.isMinutes = false;
     }
 
     createMinutesChart() {
@@ -54,7 +59,19 @@ export class ChartGenerator {
                         beginAtZero: true
                     }
                 }
-            }
+            },
         });
+        this.isMinutes = true;
+    }
+
+    toggle() {
+        if (this.isMinutes) {
+            this.createHoursChart();
+            this.button.textContent = "Switch to minutes";
+        }
+        else {
+            this.createMinutesChart();
+            this.button.textContent = "Switch to hours";
+        }
     }
 }

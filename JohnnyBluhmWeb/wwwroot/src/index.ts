@@ -3,6 +3,7 @@ import Chart, { ChartItem } from 'chart.js/auto';
 import { StravaApiClient } from "./apiClient";
 import { ChartGenerator } from "./chartGenerator";
 import { HeartRateStream } from "./models/heartRateStream";
+import { channel } from "diagnostics_channel";
 let chartGenerator: ChartGenerator;
 async function main() {
     let button = document.getElementById("switch") as HTMLButtonElement;
@@ -18,7 +19,7 @@ async function main() {
     var timeInZoneList = GetTimeInZoneList(powerStreams);
     chartGenerator = new ChartGenerator(timeInZoneList);
     chartGenerator.createHoursChart();
-    button.addEventListener("click", () => chartGenerator.createMinutesChart());
+    button.addEventListener("click", () => chartGenerator.toggle())
 }
 
 function getZone(power: string) : number{
