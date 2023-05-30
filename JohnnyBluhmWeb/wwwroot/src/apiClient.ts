@@ -1,6 +1,4 @@
 ﻿import { Stream } from "./models/stream";
-import { HeartRateStream } from "./models/heartRateStream";
-import { PowerStream } from "./models/powerStream";
 
 export class StravaApiClient {
     constructor() {

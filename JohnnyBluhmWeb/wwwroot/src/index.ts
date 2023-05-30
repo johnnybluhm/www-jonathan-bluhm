@@ -1,7 +1,7 @@
-﻿import { PowerStream } from "./models/powerStream";
+﻿import { Chart } from "chart.js/dist";
 import { StravaApiClient } from "./apiClient";
 import { ChartGenerator } from "./chartGenerator";
-import { HeartRateStream } from "./models/heartRateStream";
+import { Stream } from "./models/stream";
 import { PowerChartGenerator } from "./powerChartGenerator";
 
 let chartGenerator: ChartGenerator;
@@ -14,45 +14,15 @@ async function main() {
     var powerStreams = await client.getPowerData();
     var hrStreams = await client.getHeartRateData();
 
-    
     console.log(hrStreams);
     console.log(powerStreams);
-    console.log(hrStreams[0].heartRateDict);
-    console.log(hrStreams[0].powerDict);
 
-    //var hrTime = GetTimeInZoneListHR(hrStreams);
-    //console.log(hrTime);
-    //var timeInZoneList = GetTimeInZoneList(powerStreams);
-    //chartGenerator = new PowerChartGenerator(timeInZoneList);
-    //chartGenerator.createHoursChart();
-    //button.addEventListener("click", () => chartGenerator.toggleTimeUnits())
+    chartGenerator = new PowerChartGenerator(powerStreams);
+    chartGenerator.createHoursChart();
+    button.addEventListener("click", () => chartGenerator.toggleTimeUnits())
 }
 
-function getZone(power: string) : number{
-    var powerAsNumber = Number.parseInt(power);
-    if (powerAsNumber <= 132) {
-        return 1;
-    }
-    else if (powerAsNumber > 132 && powerAsNumber <= 180) {
-        return 2;
-    }
-    else if (powerAsNumber > 180 && powerAsNumber <= 216) {
-        return 3;
-    }
-    else if (powerAsNumber > 216 && powerAsNumber <= 252) {
-        return 4;
-    }
-    else if (powerAsNumber > 252 && powerAsNumber <= 288) {
-        return 5;
-    }
-    else if (powerAsNumber > 288 && powerAsNumber <= 360) {
-        return 6;
-    }
-    else if (powerAsNumber >= 360) {
-        return 7;
-    }
-    return 1;
-}
+
 
 function getHrZone(power: string): number {
     var powerAsNumber = Number.parseInt(power);
@@ -74,30 +44,9 @@ function getHrZone(power: string): number {
     return 1;
 }
 
-function GetTimeInZoneList(powerStreams: PowerStream[]): number[] {
-    let timeInZoneDict: { [index: string]: number } = {
-        "1": 0,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-    };
 
-    for (var powerStream of powerStreams) {
-        for (let key in powerStream.powerDict) {
-            let timeAtPowerInSeconds = powerStream.powerDict[key];
-            let zone = getZone(key);
-            let zoneString = zone.toString() as string;
-            timeInZoneDict[zoneString] += Number.parseInt(timeAtPowerInSeconds);
-        }
-    }
 
-    return Object.values(timeInZoneDict);
-}
-
-function GetTimeInZoneListHR(powerStreams: HeartRateStream[]): number[] {
+function GetTimeInZoneListHR(powerStreams: Stream[]): number[] {
     let timeInZoneDict: { [index: string]: number } = {
         "1": 0,
         "2": 0,
