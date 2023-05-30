@@ -20,6 +20,8 @@
     <Content Remove="wwwroot\src\apiClient.ts" />
     <Content Remove="wwwroot\src\chartGenerator.ts" />
     <Content Remove="wwwroot\src\index.ts" />
+    <Content Remove="wwwroot\src\models\stream.ts" />
+    <Content Remove="wwwroot\src\powerChartGenerator.ts" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +39,8 @@
     <TypeScriptCompile Include="wwwroot\src\apiClient.ts" />
     <TypeScriptCompile Include="wwwroot\src\chartGenerator.ts" />
     <TypeScriptCompile Include="wwwroot\src\index.ts" />
+    <TypeScriptCompile Include="wwwroot\src\models\stream.ts" />
+    <TypeScriptCompile Include="wwwroot\src\powerChartGenerator.ts" />
   </ItemGroup>
 
 	<Target Name="buildTs">

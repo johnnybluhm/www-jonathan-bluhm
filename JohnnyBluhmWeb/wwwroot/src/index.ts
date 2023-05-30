@@ -1,10 +1,11 @@
 ﻿import { PowerStream } from "./models/powerStream";
-import Chart, { ChartItem } from 'chart.js/auto';
 import { StravaApiClient } from "./apiClient";
 import { ChartGenerator } from "./chartGenerator";
 import { HeartRateStream } from "./models/heartRateStream";
-import { channel } from "diagnostics_channel";
+import { PowerChartGenerator } from "./powerChartGenerator";
+
 let chartGenerator: ChartGenerator;
+
 async function main() {
     let button = document.getElementById("switch") as HTMLButtonElement;
     
@@ -12,14 +13,19 @@ async function main() {
     
     var powerStreams = await client.getPowerData();
     var hrStreams = await client.getHeartRateData();
-    console.log(hrStreams);
 
-    var hrTime = GetTimeInZoneListHR(hrStreams);
-    console.log(hrTime);
-    var timeInZoneList = GetTimeInZoneList(powerStreams);
-    chartGenerator = new ChartGenerator(timeInZoneList);
-    chartGenerator.createHoursChart();
-    button.addEventListener("click", () => chartGenerator.toggle())
+    
+    console.log(hrStreams);
+    console.log(powerStreams);
+    console.log(hrStreams[0].heartRateDict);
+    console.log(hrStreams[0].powerDict);
+
+    //var hrTime = GetTimeInZoneListHR(hrStreams);
+    //console.log(hrTime);
+    //var timeInZoneList = GetTimeInZoneList(powerStreams);
+    //chartGenerator = new PowerChartGenerator(timeInZoneList);
+    //chartGenerator.createHoursChart();
+    //button.addEventListener("click", () => chartGenerator.toggleTimeUnits())
 }
 
 function getZone(power: string) : number{
