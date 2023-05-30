@@ -4,7 +4,7 @@ import { ChartGenerator } from "./chartGenerator";
 import { Stream } from "./models/stream";
 import { PowerChartGenerator } from "./powerChartGenerator";
 
-let chartGenerator: ChartGenerator;
+let chartGenerator: PowerChartGenerator;
 
 async function main() {
     let button = document.getElementById("switch") as HTMLButtonElement;
@@ -18,7 +18,7 @@ async function main() {
     console.log(powerStreams);
 
     chartGenerator = new PowerChartGenerator(powerStreams);
-    chartGenerator.createHoursChart();
+    chartGenerator.createPieChart();
     button.addEventListener("click", () => chartGenerator.toggleTimeUnits())
 }
 

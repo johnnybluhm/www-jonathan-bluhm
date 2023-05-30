@@ -1,4 +1,4 @@
-﻿import { Chart, ChartItem } from "chart.js/auto";
+﻿import { Chart, ChartItem, ChartType } from "chart.js/auto";
 import { ChartGenerator } from "./chartGenerator";
 import { Stream } from "./models/stream";
 
@@ -70,6 +70,25 @@ export class PowerChartGenerator extends ChartGenerator {
             this.createMinutesChart();
             this.button.textContent = "Switch to hours";
         }
+    }
+
+    createPieChart(): void {
+        if (this.chart != null || this.chart != undefined) {
+            this.chart.destroy();
+        }
+        const data = {
+            labels: ['Zone 1', 'Zone 2', 'Zone 3', 'Zone 4', 'Zone 5', 'Zone 6', 'Zone 7'],
+            datasets: [{
+                label: 'Time in Zone',
+                data: this.data.map(x => x / 3600),
+                hoverOffset: 4
+            }]
+        };
+        this.chart = new Chart(this.chartItem, {
+            type: 'pie' as ChartType,
+            data: data
+        });
+        this.isMinutes = false;
     }
 
     private GetTimeInZoneList(powerStreams: Stream[]): number[] {
