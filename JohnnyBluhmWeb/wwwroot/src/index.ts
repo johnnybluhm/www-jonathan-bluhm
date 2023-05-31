@@ -7,8 +7,8 @@ import { PowerChartGenerator } from "./powerChartGenerator";
 
 
 async function main() {
-    let button = document.getElementById("switchPower") as HTMLButtonElement;
-    let hrButton = document.getElementById("switchHr") as HTMLButtonElement;
+    //let button = document.getElementById("switchPower") as HTMLButtonElement;
+    //let hrButton = document.getElementById("switchHr") as HTMLButtonElement;
 
     let powerToggleChartButton = document.getElementById("convertPower") as HTMLButtonElement;
     let hrToggleChartButton = document.getElementById("convertHr") as HTMLButtonElement;
@@ -23,12 +23,12 @@ async function main() {
 
     let powerChartGenerator = new PowerChartGenerator(powerStreams);
     powerChartGenerator.createPieChart();
-    button.addEventListener("click", () => powerChartGenerator.toggleTimeUnits());
+    //button.addEventListener("click", () => powerChartGenerator.toggleTimeUnits());
     powerToggleChartButton.addEventListener("click", () => powerChartGenerator.toggleChartType());
 
     let hrChartGenerator = new HeartRateChartGenerator(hrStreams);
     hrChartGenerator.createPieChart();
-    hrButton.addEventListener("click", () => hrChartGenerator.toggleTimeUnits());
+    //hrButton.addEventListener("click", () => hrChartGenerator.toggleTimeUnits());
     hrToggleChartButton.addEventListener("click", () => hrChartGenerator.toggleChartType());
 
 }
