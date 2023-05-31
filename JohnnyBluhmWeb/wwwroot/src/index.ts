@@ -1,13 +1,15 @@
 ﻿import { Chart } from "chart.js/dist";
 import { StravaApiClient } from "./apiClient";
 import { ChartGenerator } from "./chartGenerator";
+import { HeartRateChartGenerator } from "./heartRateChartGenerator";
 import { Stream } from "./models/stream";
 import { PowerChartGenerator } from "./powerChartGenerator";
 
 let chartGenerator: PowerChartGenerator;
 
 async function main() {
-    let button = document.getElementById("switch") as HTMLButtonElement;
+    let button = document.getElementById("switchPower") as HTMLButtonElement;
+    let hrButton = document.getElementById("switchHr") as HTMLButtonElement;
     
     let client = new StravaApiClient();
     
@@ -19,7 +21,11 @@ async function main() {
 
     chartGenerator = new PowerChartGenerator(powerStreams);
     chartGenerator.createPieChart();
-    button.addEventListener("click", () => chartGenerator.toggleTimeUnits())
+    button.addEventListener("click", () => chartGenerator.toggleTimeUnits());
+
+    let hrChartGenerator = new HeartRateChartGenerator(hrStreams);
+    hrChartGenerator.createPieChart();
+    hrButton.addEventListener("click", () => hrChartGenerator.toggleTimeUnits());
 }
 
 (async () => {

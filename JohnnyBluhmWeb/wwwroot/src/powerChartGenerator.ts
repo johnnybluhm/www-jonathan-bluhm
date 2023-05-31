@@ -7,7 +7,7 @@ export class PowerChartGenerator extends ChartGenerator {
     constructor(data: Stream[]) {
         super();
         this.data = this.getTimeInZoneList(data);
-        this.button = document.getElementById("switch") as HTMLButtonElement;
+        this.button = document.getElementById("switchPower") as HTMLButtonElement;
         this.chartItem = document.getElementById("powerChart") as ChartItem;
     }
 

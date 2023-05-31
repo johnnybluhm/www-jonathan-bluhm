@@ -122,10 +122,10 @@ export class HeartRateChartGenerator extends ChartGenerator {
 
         for (var hrStream of streams) {
             for (let key in hrStream.heartRateDict) {
-                let timeAtPowerInSeconds = hrStream.heartRateDict[key];
+                let timeAtHrInSeconds = hrStream.heartRateDict[key];
                 let zone = this.getZone(key);
                 let zoneString = zone.toString() as string;
-                timeInZoneDict[zoneString] += Number.parseInt(timeAtPowerInSeconds);
+                timeInZoneDict[zoneString] += Number.parseInt(timeAtHrInSeconds);
             }
         }
 
