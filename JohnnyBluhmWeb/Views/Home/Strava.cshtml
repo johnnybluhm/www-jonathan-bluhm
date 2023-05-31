@@ -1,12 +1,26 @@
-﻿<div class="row">
+﻿
+<style>
+    .chart-wrapper {
+        display: inline-block;
+        position: relative;
+        width: 100%;
+        height: 600px;
+        width: 400px;
+    }
+</style>
+<div class="row">
     <div class="col">
         <h1>HeartRate Charts</h1>
-        <canvas id="hrChart"></canvas>
-        <button id="convertHr">Toggle chart type</button>
+        <div class="chart-wrapper">
+            <canvas id="hrChart"></canvas>
         </div>
+        <button id="convertHr">Toggle chart type</button>
+    </div>
     <div class="col">
         <h1>Power Charts</h1>
-        <canvas id="powerChart"></canvas>
+        <div class="chart-wrapper">
+            <canvas id="powerChart"></canvas>
+        </div>
         <button id="convertPower">Toggle chart type</button>
     </div>
 </div>

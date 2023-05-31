@@ -51,6 +51,7 @@ export class HeartRateChartGenerator extends ChartGenerator {
                 }]
             },
             options: {
+                responsive: true,
                 scales: {
                     y: {
                         beginAtZero: true
@@ -94,7 +95,7 @@ export class HeartRateChartGenerator extends ChartGenerator {
         };
         this.chart = new Chart(this.chartItem, {
             type: 'pie' as ChartType,
-            data: data
+            data: data,
         });
         this.isMinutes = false;
     }
