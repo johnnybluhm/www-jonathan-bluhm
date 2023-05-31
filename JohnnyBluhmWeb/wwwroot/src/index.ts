@@ -5,11 +5,13 @@ import { HeartRateChartGenerator } from "./heartRateChartGenerator";
 import { Stream } from "./models/stream";
 import { PowerChartGenerator } from "./powerChartGenerator";
 
-let chartGenerator: PowerChartGenerator;
 
 async function main() {
     let button = document.getElementById("switchPower") as HTMLButtonElement;
     let hrButton = document.getElementById("switchHr") as HTMLButtonElement;
+
+    let powerToggleChartButton = document.getElementById("convertPower") as HTMLButtonElement;
+    let hrToggleChartButton = document.getElementById("convertHr") as HTMLButtonElement;
     
     let client = new StravaApiClient();
     
@@ -19,13 +21,16 @@ async function main() {
     console.log(hrStreams);
     console.log(powerStreams);
 
-    chartGenerator = new PowerChartGenerator(powerStreams);
-    chartGenerator.createPieChart();
-    button.addEventListener("click", () => chartGenerator.toggleTimeUnits());
+    let powerChartGenerator = new PowerChartGenerator(powerStreams);
+    powerChartGenerator.createPieChart();
+    button.addEventListener("click", () => powerChartGenerator.toggleTimeUnits());
+    powerToggleChartButton.addEventListener("click", () => powerChartGenerator.toggleChartType());
 
     let hrChartGenerator = new HeartRateChartGenerator(hrStreams);
     hrChartGenerator.createPieChart();
     hrButton.addEventListener("click", () => hrChartGenerator.toggleTimeUnits());
+    hrToggleChartButton.addEventListener("click", () => hrChartGenerator.toggleChartType());
+
 }
 
 (async () => {

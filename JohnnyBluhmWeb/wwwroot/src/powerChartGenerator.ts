@@ -1,9 +1,8 @@
-﻿import { Chart, ChartItem, ChartType } from "chart.js/auto";
+﻿import { Chart, ChartConfiguration, ChartItem, ChartType, ChartTypeRegistry } from "chart.js/auto";
 import { ChartGenerator } from "./chartGenerator";
 import { Stream } from "./models/stream";
 
 export class PowerChartGenerator extends ChartGenerator {
-
     constructor(data: Stream[]) {
         super();
         this.data = this.getTimeInZoneList(data);
@@ -64,13 +63,22 @@ export class PowerChartGenerator extends ChartGenerator {
     toggleTimeUnits() : void {
         if (this.isMinutes) {
             this.createHoursChart();
-            this.button.textContent = "Switch to minutes";
         }
         else {
             this.createMinutesChart();
-            this.button.textContent = "Switch to hours";
         }
     }
+
+    toggleChartType(): void {
+        let chartConfig = this.chart.config as ChartConfiguration;
+        if (chartConfig.type == 'pie') {
+            this.createHoursChart();
+        }
+        else {
+            this.createPieChart();
+        }
+    }
+
 
     createPieChart(): void {
         if (this.chart != null || this.chart != undefined) {
