@@ -8,7 +8,7 @@ export class TimeInZoneFilter {
     constructor(data: StravaActivity[]) {
         this.activities = data;
     }
-
+    
     filterByDate(fromDateString: string, untilDateString: string, streams: Stream[]) : Stream[] {
         let fromDate = Date.parse(fromDateString);
         let untilDate = Date.parse(untilDateString);

@@ -1,17 +1,22 @@
 ﻿import { Chart, ChartConfiguration, ChartItem, ChartType } from "chart.js/auto";
 import { ChartGenerator } from "./chartGenerator";
+import { StravaActivity } from "./models/stravaActivity";
 import { Stream } from "./models/stream";
+import { TimeInZoneFilter } from "./timeInZoneFilter";
+import * as DateHelper from 'date-fns';
 
 export class HeartRateChartGenerator extends ChartGenerator {
     allStreams: Stream[];
     filteredStreams: Stream[];
-    constructor(data: Stream[]) {
+    dataFilter: TimeInZoneFilter;
+    constructor(data: Stream[], activities: StravaActivity[]) {
         super();
         this.data = this.getTimeInZoneList(data);
         this.button = document.getElementById("switchHr") as HTMLButtonElement;
         this.chartItem = document.getElementById("hrChart") as ChartItem;
         this.allStreams = data;
         this.filteredStreams = data;
+        this.dataFilter = new TimeInZoneFilter(activities);
     }
 
     createHoursChart(): void {
@@ -88,6 +93,9 @@ export class HeartRateChartGenerator extends ChartGenerator {
         if (this.chart != null || this.chart != undefined) {
             this.chart.destroy();
         }
+        this.filteredStreams = this.dataFilter.filterByDate(new Date(2023, 0).toString(), new Date(2023, 6).toString(), this.allStreams);
+        this.data = this.getTimeInZoneList(this.filteredStreams);
+        console.log(this.filteredStreams);
         const data = {
             labels: ['Zone 1', 'Zone 2', 'Zone 3', 'Zone 4', 'Zone 5'],
             datasets: [{

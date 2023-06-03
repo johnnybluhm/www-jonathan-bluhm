@@ -31,7 +31,7 @@ async function main() {
     //button.addEventListener("click", () => powerChartGenerator.toggleTimeUnits());
     powerToggleChartButton.addEventListener("click", () => powerChartGenerator.toggleChartType());
 
-    let hrChartGenerator = new HeartRateChartGenerator(hrStreams);
+    let hrChartGenerator = new HeartRateChartGenerator(hrStreams, activities);
     hrChartGenerator.createPieChart();
     //hrButton.addEventListener("click", () => hrChartGenerator.toggleTimeUnits());
     hrToggleChartButton.addEventListener("click", () => hrChartGenerator.toggleChartType());
