@@ -2,10 +2,9 @@
 import { StravaApiClient } from "./apiClient";
 import { ChartGenerator } from "./chartGenerator";
 import { HeartRateChartGenerator } from "./heartRateChartGenerator";
-import { DataCalculator } from "./mainModel";
+import { DataCalculator } from "./dataCalculator";
 import { StravaActivity } from "./models/stravaActivity";
 import { Stream } from "./models/stream";
-import { PowerChartGenerator } from "./powerChartGenerator";
 
 
 async function main() {
@@ -37,11 +36,8 @@ async function main() {
     hrChartGenerator.createPieChart();
     //hrButton.addEventListener("click", () => hrChartGenerator.toggleTimeUnits());
     hrToggleChartButton.addEventListener("click", () => hrChartGenerator.toggleChartType());*/
-    console.log("before:");
-    console.log(activities);
+
     addStreamsToActivity(powerStreams, hrStreams, activities);
-    console.log("after:");
-    console.log(activities);
     //let test = new DataCalculator(powerStreams.concat(hrStreams), activities);
 
 }
