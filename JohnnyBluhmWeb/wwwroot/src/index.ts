@@ -18,6 +18,11 @@ async function main() {
     var powerStreams = await client.getPowerData();
     var hrStreams = await client.getHeartRateData();
 
+    var activities = await client.getActivities();
+
+    var detailedActivities = await client.getDetailedActivities();
+    console.log(activities);
+    console.log(detailedActivities);
     console.log(hrStreams);
     console.log(powerStreams);
 
