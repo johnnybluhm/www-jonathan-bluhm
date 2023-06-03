@@ -1,3 +1,5 @@
+import { Stream } from "./stream";
+
 export interface StravaActivity {
     resource_state: number | null;
     name: string | null;
@@ -27,4 +29,6 @@ export interface StravaActivity {
     has_heartrate: boolean | null;
     average_heartrate: number | null;
     max_watts: number | null;
+    hrStream: { [key: string]: string; } | null;
+    powerStream: { [key: string]: string; } | null;
 }
