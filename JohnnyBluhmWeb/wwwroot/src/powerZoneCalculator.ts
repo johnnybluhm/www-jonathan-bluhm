@@ -54,7 +54,7 @@ export class PowerZone {
         return 1;
     }
 
-    private getPowerZones(ftp: number) {
+    private setPowerZones(ftp: number) {
         this.powerZones[0] = ftp * .55;
         this.powerZones[1] = ftp * .75;
         this.powerZones[2] = ftp * .87;

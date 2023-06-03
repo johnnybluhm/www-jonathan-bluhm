@@ -42,6 +42,7 @@ async function main() {
     let test = new DataCalculator(activities);
     test.setTimeInZoneLists();
     console.log(test.powerTimeInZone);
+    console.log(test.hrTimeInZone);
 }
 
 function addStreamsToActivity(powerStreams: Stream[], hrStreams: Stream[], activities: StravaActivity[]) {
