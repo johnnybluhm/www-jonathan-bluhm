@@ -19,11 +19,11 @@
   <ItemGroup>
     <Content Remove="wwwroot\src\apiClient.ts" />
     <Content Remove="wwwroot\src\chartGenerator.ts" />
+    <Content Remove="wwwroot\src\dataCalculator.ts" />
     <Content Remove="wwwroot\src\heartRateChartGenerator.ts" />
     <Content Remove="wwwroot\src\index.ts" />
-    <Content Remove="wwwroot\src\mainModel.ts" />
     <Content Remove="wwwroot\src\models\stream.ts" />
-    <Content Remove="wwwroot\src\powerChartGenerator.ts" />
+    <Content Remove="wwwroot\src\powerZoneCalculator.ts" />
     <Content Remove="wwwroot\src\timeInZoneFilter.ts" />
   </ItemGroup>
 
@@ -43,9 +43,9 @@
     <TypeScriptCompile Include="wwwroot\src\chartGenerator.ts" />
     <TypeScriptCompile Include="wwwroot\src\heartRateChartGenerator.ts" />
     <TypeScriptCompile Include="wwwroot\src\index.ts" />
-    <TypeScriptCompile Include="wwwroot\src\mainModel.ts" />
+    <TypeScriptCompile Include="wwwroot\src\dataCalculator.ts" />
     <TypeScriptCompile Include="wwwroot\src\models\stream.ts" />
-    <TypeScriptCompile Include="wwwroot\src\powerChartGenerator.ts" />
+    <TypeScriptCompile Include="wwwroot\src\powerZoneCalculator.ts" />
     <TypeScriptCompile Include="wwwroot\src\timeInZoneFilter.ts" />
   </ItemGroup>
 

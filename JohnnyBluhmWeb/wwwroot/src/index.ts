@@ -38,8 +38,10 @@ async function main() {
     hrToggleChartButton.addEventListener("click", () => hrChartGenerator.toggleChartType());*/
 
     addStreamsToActivity(powerStreams, hrStreams, activities);
-    //let test = new DataCalculator(powerStreams.concat(hrStreams), activities);
 
+    let test = new DataCalculator(activities);
+    test.setTimeInZoneLists();
+    console.log(test.powerTimeInZone);
 }
 
 function addStreamsToActivity(powerStreams: Stream[], hrStreams: Stream[], activities: StravaActivity[]) {

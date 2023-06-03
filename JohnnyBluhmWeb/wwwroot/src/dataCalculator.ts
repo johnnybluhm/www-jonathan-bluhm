@@ -17,6 +17,7 @@ export class DataCalculator {
 
     constructor(activities: StravaActivity[]) {
         this.allActivities = activities;
+        this.filteredActivities = activities;
     }
 
     filterByDate(fromDateString: string, toDateString: string) {
