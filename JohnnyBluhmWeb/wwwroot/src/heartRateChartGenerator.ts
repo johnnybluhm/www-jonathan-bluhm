@@ -3,12 +3,15 @@ import { ChartGenerator } from "./chartGenerator";
 import { Stream } from "./models/stream";
 
 export class HeartRateChartGenerator extends ChartGenerator {
-
+    allStreams: Stream[];
+    filteredStreams: Stream[];
     constructor(data: Stream[]) {
         super();
         this.data = this.getTimeInZoneList(data);
         this.button = document.getElementById("switchHr") as HTMLButtonElement;
         this.chartItem = document.getElementById("hrChart") as ChartItem;
+        this.allStreams = data;
+        this.filteredStreams = data;
     }
 
     createHoursChart(): void {
