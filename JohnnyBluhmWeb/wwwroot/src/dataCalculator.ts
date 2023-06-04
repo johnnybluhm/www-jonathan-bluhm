@@ -28,11 +28,17 @@ export class DataCalculator {
                 this.filteredActivities.push(activity);
             }
         }
-        this.setTimeInZoneLists();
     }
 
     setTimeInZoneLists() {
         this.powerTimeInZone = new PowerZone().getTimeInZoneList(this.filteredActivities);
         this.hrTimeInZone = new HrZone().getTimeInZoneList(this.filteredActivities);
+    }
+
+    setCaloriesBurned() {
+        this.caloriesBurnedInTimePeriod = 0;
+        for (let activity of this.filteredActivities) {
+            this.caloriesBurnedInTimePeriod += activity.details.calories;
+        }
     }
 }
