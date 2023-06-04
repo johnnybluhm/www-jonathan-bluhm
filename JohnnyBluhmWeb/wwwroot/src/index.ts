@@ -32,6 +32,26 @@ async function main() {
     chartProvider.timeInZone = dataCalculator.hrTimeInZone;
 
     chartProvider.createTimeInZoneChart();
+    let dateButton = document.getElementById("applyDates") as HTMLButtonElement;
+    let fromDate = document.getElementById("fromDate") as HTMLInputElement;
+    let toDate = document.getElementById("toDate") as HTMLInputElement;
+    let total = document.getElementById("total");
+    dateButton.addEventListener("click", () => {
+        console.log("ran");
+        console.log(fromDate.value)
+        console.log(Date.parse(fromDate.value));
+        dataCalculator.filterByDate(new Date(fromDate.value), new Date(toDate.value));
+        dataCalculator.setTimeInZoneLists();
+        console.log(dataCalculator.hrTimeInZone);
+        chartProvider.timeInZone = dataCalculator.hrTimeInZone;
+        chartProvider.createTimeInZoneChart();
+        let totalNum = 0;
+        for (let val of chartProvider.timeInZone) {
+            totalNum += val;
+        }
+        totalNum = totalNum / 3600;
+        total.textContent = "Total hours: " + totalNum.toString();
+    })
 }
 
 function addStreamsToActivity(powerStreams: Stream[], hrStreams: Stream[], activities: StravaActivity[]) {
@@ -43,7 +63,7 @@ function addStreamsToActivity(powerStreams: Stream[], hrStreams: Stream[], activ
     }
 }
 
-function addDetailsToActivity(activities: StravaActivity[], detailedActivities : DetailedActivity[]) {
+function addDetailsToActivity(activities: StravaActivity[], detailedActivities: DetailedActivity[]) {
     for (let activity of activities) {
         let details = detailedActivities.find(e => e.id == activity.id);
         activity.details = details;
