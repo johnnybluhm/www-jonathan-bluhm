@@ -15,7 +15,7 @@ export class ChartProvider  {
         this.chartItem = document.getElementById("hrChart") as ChartItem;
     }
 
-    createTimeInZoneChart(timeInZone: number[]): void {
+    createTimeInZoneChart(): void {
         if (this.chart != null || this.chart != undefined) {
             this.chart.destroy();
         }
@@ -25,7 +25,7 @@ export class ChartProvider  {
                 labels: ['Zone 1', 'Zone 2', 'Zone 3', 'Zone 4', 'Zone 5'],
                 datasets: [{
                     label: 'Time in Zone (hours)',
-                    data: timeInZone.map(x => x / 3600),
+                    data: this.timeInZone.map(x => x / 3600),
                     borderWidth: 1
                 }]
             },
