@@ -42,7 +42,7 @@ async function main() {
     addStreamsToActivity(powerStreams, hrStreams, activities);
     addDetailsToActivity(activities, detailedActivities);
     console.log(activities);
-    /*let dataCalculator = new DataCalculator(activities);
+    let dataCalculator = new DataCalculator(activities);
     dataCalculator.setTimeInZoneLists();
 
     
@@ -62,7 +62,7 @@ async function main() {
     dataCalculator.filterByDate(DateHelper.subYears(new Date(), 5), new Date());
     let filteredAllTime = dataCalculator.hrTimeInZone;
     console.log("All time");
-    console.log(filteredAllTime);*/
+    console.log(filteredAllTime);
 }
 
 function addStreamsToActivity(powerStreams: Stream[], hrStreams: Stream[], activities: StravaActivity[]) {

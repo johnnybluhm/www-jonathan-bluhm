@@ -24,7 +24,7 @@ export class DataCalculator {
         this.filteredActivities = [];
         for (let activity of this.allActivities) {
             let activityDate = Date.parse(activity.start_date_local);
-            if (DateHelper.isAfter(activityDate, Date.parse(fromDate.toDateString())) && DateHelper.isBefore(activityDate, Date.parse(toDate.toDateString()))) {
+            if (DateHelper.isAfter(activityDate, fromDate) && DateHelper.isBefore(activityDate, toDate)) {
                 this.filteredActivities.push(activity);
             }
         }
