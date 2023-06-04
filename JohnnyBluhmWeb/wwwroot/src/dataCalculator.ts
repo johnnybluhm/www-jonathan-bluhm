@@ -10,7 +10,6 @@ import { HrZone } from "./hrZoneCalculator";
 export class DataCalculator {
     allActivities: StravaActivity[];
     filteredActivities: StravaActivity[];
-    hrZones: number[];
 
     hrTimeInZone: number[];
     powerTimeInZone: number[]
@@ -21,22 +20,19 @@ export class DataCalculator {
         this.filteredActivities = activities;
     }
 
-    filterByDate(fromDateString: string, toDateString: string) {
-        let fromDate = Date.parse(fromDateString);
-        let toDate = Date.parse(toDateString);
+    filterByDate(fromDate: Date, toDate: Date) {
         this.filteredActivities = [];
         for (let activity of this.allActivities) {
-            var activityDate = Date.parse(activity.start_date_local);
-            if (DateHelper.isAfter(activityDate, fromDate) && DateHelper.isBefore(activityDate, toDate)) {
+            let activityDate = Date.parse(activity.start_date_local);
+            if (DateHelper.isAfter(activityDate, Date.parse(fromDate.toDateString())) && DateHelper.isBefore(activityDate, Date.parse(toDate.toDateString()))) {
                 this.filteredActivities.push(activity);
             }
         }
+        this.setTimeInZoneLists();
     }
 
     setTimeInZoneLists() {
         this.powerTimeInZone = new PowerZone().getTimeInZoneList(this.filteredActivities);
         this.hrTimeInZone = new HrZone().getTimeInZoneList(this.filteredActivities);
     }
-
-
 }

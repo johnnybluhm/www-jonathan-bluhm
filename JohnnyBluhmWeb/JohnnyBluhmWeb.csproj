@@ -19,6 +19,7 @@
   <ItemGroup>
     <Content Remove="wwwroot\src\apiClient.ts" />
     <Content Remove="wwwroot\src\chartGenerator.ts" />
+    <Content Remove="wwwroot\src\chartProvider.ts" />
     <Content Remove="wwwroot\src\dataCalculator.ts" />
     <Content Remove="wwwroot\src\heartRateChartGenerator.ts" />
     <Content Remove="wwwroot\src\hrZoneCalculator.ts" />
@@ -42,6 +43,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\src\apiClient.ts" />
     <TypeScriptCompile Include="wwwroot\src\chartGenerator.ts" />
+    <TypeScriptCompile Include="wwwroot\src\chartProvider.ts" />
     <TypeScriptCompile Include="wwwroot\src\heartRateChartGenerator.ts" />
     <TypeScriptCompile Include="wwwroot\src\hrZoneCalculator.ts" />
     <TypeScriptCompile Include="wwwroot\src\index.ts" />

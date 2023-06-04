@@ -5,6 +5,7 @@ import { HeartRateChartGenerator } from "./heartRateChartGenerator";
 import { DataCalculator } from "./dataCalculator";
 import { StravaActivity } from "./models/stravaActivity";
 import { Stream } from "./models/stream";
+import * as DateHelper from "date-fns";
 
 
 async function main() {
@@ -39,10 +40,27 @@ async function main() {
 
     addStreamsToActivity(powerStreams, hrStreams, activities);
 
-    let test = new DataCalculator(activities);
-    test.setTimeInZoneLists();
-    console.log(test.powerTimeInZone);
-    console.log(test.hrTimeInZone);
+    let dataCalculator = new DataCalculator(activities);
+    dataCalculator.setTimeInZoneLists();
+
+    
+    //dataCalculator.filterByDate(new Date(2023, 0).toString(), new Date(2023, 6).toString());
+    dataCalculator.filterByDate(DateHelper.subDays(new Date(), 30), new Date());
+    let filtered30days = dataCalculator.hrTimeInZone;
+    console.log("After 30 days filter");
+    console.log(filtered30days);
+    dataCalculator.filterByDate(DateHelper.subDays(new Date(), 90), new Date());
+    let filtered90days = dataCalculator.hrTimeInZone;
+    console.log("After 90 days filter");
+    console.log(filtered90days);
+    dataCalculator.filterByDate(DateHelper.subYears(new Date(), 1), new Date());
+    let filtered1year = dataCalculator.hrTimeInZone;
+    console.log("After 1 year filter");
+    console.log(filtered1year);
+    dataCalculator.filterByDate(DateHelper.subYears(new Date(), 5), new Date());
+    let filteredAllTime = dataCalculator.hrTimeInZone;
+    console.log("All time");
+    console.log(filteredAllTime);
 }
 
 function addStreamsToActivity(powerStreams: Stream[], hrStreams: Stream[], activities: StravaActivity[]) {
