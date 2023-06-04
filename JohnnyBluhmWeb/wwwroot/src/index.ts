@@ -6,6 +6,7 @@ import { DataCalculator } from "./dataCalculator";
 import { StravaActivity } from "./models/stravaActivity";
 import { Stream } from "./models/stream";
 import * as DateHelper from "date-fns";
+import { DetailedActivity } from "./models/detailedActivity";
 
 
 async function main() {
@@ -39,8 +40,9 @@ async function main() {
     hrToggleChartButton.addEventListener("click", () => hrChartGenerator.toggleChartType());*/
 
     addStreamsToActivity(powerStreams, hrStreams, activities);
-
-    let dataCalculator = new DataCalculator(activities);
+    addDetailsToActivity(activities, detailedActivities);
+    console.log(activities);
+    /*let dataCalculator = new DataCalculator(activities);
     dataCalculator.setTimeInZoneLists();
 
     
@@ -60,7 +62,7 @@ async function main() {
     dataCalculator.filterByDate(DateHelper.subYears(new Date(), 5), new Date());
     let filteredAllTime = dataCalculator.hrTimeInZone;
     console.log("All time");
-    console.log(filteredAllTime);
+    console.log(filteredAllTime);*/
 }
 
 function addStreamsToActivity(powerStreams: Stream[], hrStreams: Stream[], activities: StravaActivity[]) {
@@ -69,6 +71,13 @@ function addStreamsToActivity(powerStreams: Stream[], hrStreams: Stream[], activ
         let powerStreamWithId = powerStreams.find(stream => stream.id == activity.id);
         activity.powerStream = powerStreamWithId?.powerDict;
         activity.hrStream = hrStreamWithId?.heartRateDict;
+    }
+}
+
+function addDetailsToActivity(activities: StravaActivity[], detailedActivities : DetailedActivity[]) {
+    for (let activity of activities) {
+        let details = detailedActivities.find(e => e.id == activity.id);
+        activity.details = details;
     }
 }
 

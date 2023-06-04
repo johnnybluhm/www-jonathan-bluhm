@@ -1,3 +1,4 @@
+import { DetailedActivity } from "./detailedActivity";
 import { Stream } from "./stream";
 
 export interface StravaActivity {
@@ -31,4 +32,5 @@ export interface StravaActivity {
     max_watts: number | null;
     hrStream: { [key: string]: string; } | null;
     powerStream: { [key: string]: string; } | null;
+    details: DetailedActivity | null;
 }
